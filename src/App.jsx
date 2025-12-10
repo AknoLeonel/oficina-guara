@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect, memo, useRef } from 'react';
 import { 
   Menu, 
   X, 
@@ -25,7 +25,12 @@ import {
   Activity,
   Wind,
   ShieldCheck,
-  MessageCircle
+  MessageCircle,
+  AlertTriangle,
+  Gauge,
+  Volume2,
+  Cpu,
+  PaintBucket
 } from 'lucide-react';
 
 // --- OTIMIZAÇÃO DE PERFORMANCE ---
@@ -83,24 +88,6 @@ const GlassCard = ({ children, className = "" }) => (
   </div>
 );
 
-const ServiceCard = memo(({ icon: Icon, title, description }) => (
-  <GlassCard className="h-full flex flex-col relative overflow-hidden">
-    <div className="w-14 h-14 bg-zinc-800 rounded-xl border border-zinc-700 flex items-center justify-center mb-6 group-hover:border-[#e51f23] transition-colors duration-300 relative z-10">
-      <Icon size={28} className="text-[#e51f23] group-hover:text-white transition-colors" />
-    </div>
-    
-    <h3 className="text-xl font-bold text-white mb-3 uppercase font-header tracking-wide">{title}</h3>
-    <p className="text-zinc-400 leading-relaxed text-sm md:text-base flex-grow font-light border-t border-white/5 pt-4 mt-2">
-      {description}
-    </p>
-    <div className="mt-4 flex items-center text-[#e51f23] text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-      SAIBA MAIS <ArrowRight size={16} className="ml-2" />
-    </div>
-  </GlassCard>
-));
-
-ServiceCard.displayName = 'ServiceCard';
-
 const WhatsAppButton = () => (
   <a
     href="https://wa.me/556135679250"
@@ -116,10 +103,184 @@ const WhatsAppButton = () => (
   </a>
 );
 
+const DiagnosticPanel = () => {
+  const [selectedIssue, setSelectedIssue] = useState(null);
+
+  const issues = [
+    { id: 'noise', icon: Volume2, label: 'Barulho Estranho', message: 'Barulhos podem indicar problemas na suspensão, motor ou correias. Traz pra gente ouvir!' },
+    { id: 'light', icon: AlertTriangle, label: 'Luz no Painel', message: 'Luzes de alerta não devem ser ignoradas. Passamos o scanner para identificar o erro exato.' },
+    { id: 'power', icon: Gauge, label: 'Carro Falhando', message: 'Pode ser injeção eletrônica, velas ou combustível. Vamos fazer um check-up completo.' },
+    { id: 'brake', icon: Disc, label: 'Freio Ruim', message: 'Segurança em primeiro lugar! Revisamos pastilhas, discos e fluido de freio.' },
+    { id: 'checkup', icon: ShieldCheck, label: 'Apenas Revisão', message: 'Ótima escolha! Prevenir é sempre mais barato que remediar. Agende sua revisão.' },
+  ];
+
+  return (
+    <div className="bg-zinc-900/90 backdrop-blur-md border-l-4 border-[#e51f23] rounded-2xl shadow-2xl overflow-hidden">
+      <div className="p-6 md:p-8">
+        <h3 className="text-xl md:text-2xl font-header font-bold text-white uppercase mb-2">
+          O que está acontecendo com seu carro?
+        </h3>
+        <p className="text-zinc-400 text-sm mb-6">Selecione uma opção para ver como podemos ajudar:</p>
+        
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+          {issues.map((issue) => (
+            <button
+              key={issue.id}
+              onClick={() => setSelectedIssue(issue)}
+              className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-300 ${
+                selectedIssue?.id === issue.id 
+                  ? 'bg-[#e51f23] border-[#e51f23] text-white scale-105 shadow-lg' 
+                  : 'bg-zinc-800 border-zinc-700 text-zinc-300 hover:bg-zinc-700 hover:border-zinc-500'
+              }`}
+            >
+              <issue.icon size={24} className="mb-2" />
+              <span className="text-xs font-bold uppercase text-center leading-tight">{issue.label}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className={`bg-black/40 rounded-xl p-4 border border-white/5 transition-all duration-500 ${selectedIssue ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 hidden'}`}>
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#e51f23]/20 flex items-center justify-center shrink-0">
+              <Wrench size={20} className="text-[#e51f23]" />
+            </div>
+            <div>
+              <h4 className="text-white font-bold text-sm uppercase mb-1">Nossa Análise Rápida:</h4>
+              <p className="text-zinc-300 text-sm leading-relaxed mb-4">
+                {selectedIssue?.message}
+              </p>
+              <Button className="w-full text-sm py-2">
+                Agendar Diagnóstico Gratuito
+              </Button>
+            </div>
+          </div>
+        </div>
+        
+        {!selectedIssue && (
+           <div className="text-center py-4 border-t border-white/5 mt-2">
+              <p className="text-zinc-500 text-xs italic">
+                Não encontrou o problema? Fale direto no WhatsApp.
+              </p>
+           </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// --- NOVO COMPONENTE: SERVIÇOS INTERATIVOS ---
+const InteractiveServices = () => {
+  const [activeCategory, setActiveCategory] = useState(0);
+
+  const categories = [
+    {
+      id: 0,
+      title: "Mecânica & Motor",
+      icon: Wrench,
+      description: "O coração do seu carro em perfeitas condições.",
+      services: ["Diagnóstico Completo", "Correia Dentada", "Manutenção de Motores", "Troca de Óleo e Filtros"]
+    },
+    {
+      id: 1,
+      title: "Elétrica & Tecnologia",
+      icon: Cpu,
+      description: "Soluções avançadas para sistemas modernos.",
+      services: ["Injeção Eletrônica", "Baterias e Alternadores", "Sensores e Atuadores", "Diagnóstico via Scanner"]
+    },
+    {
+      id: 2,
+      title: "Suspensão & Freios",
+      icon: Disc,
+      description: "Segurança e estabilidade para sua família.",
+      services: ["Sistema de Freios ABS", "Amortecedores e Molas", "Alinhamento e Balanceamento", "Pneus e Rodas"]
+    },
+    {
+      id: 3,
+      title: "Conforto & Clima",
+      icon: Wind,
+      description: "Bem-estar total dentro do seu veículo.",
+      services: ["Higienização de Ar-Condicionado", "Filtro de Cabine", "Reparo de Compressores", "Carga de Gás"]
+    }
+  ];
+
+  return (
+    <div className="grid lg:grid-cols-12 gap-8 h-auto lg:h-[500px]">
+      {/* Menu Lateral de Categorias */}
+      <div className="lg:col-span-4 flex flex-col gap-4">
+        {categories.map((cat, index) => (
+          <button
+            key={cat.id}
+            onClick={() => setActiveCategory(index)}
+            className={`text-left p-6 rounded-2xl border transition-all duration-300 group relative overflow-hidden ${
+              activeCategory === index 
+                ? 'bg-[#e51f23] border-[#e51f23] text-white shadow-[0_0_30px_rgba(229,31,35,0.3)] scale-105 z-10' 
+                : 'bg-zinc-900/50 border-white/5 text-zinc-400 hover:bg-zinc-800 hover:text-white'
+            }`}
+          >
+            <div className="flex items-center justify-between relative z-10">
+              <div className="flex items-center gap-4">
+                <cat.icon size={24} className={activeCategory === index ? 'text-white' : 'text-[#e51f23]'} />
+                <span className="font-header text-lg uppercase font-bold">{cat.title}</span>
+              </div>
+              {activeCategory === index && <ArrowRight size={20} className="animate-pulse" />}
+            </div>
+            {/* Background progress bar effect for active state if wanted, simplified for now */}
+          </button>
+        ))}
+      </div>
+
+      {/* Painel de Detalhes (Visualização do Serviço) */}
+      <div className="lg:col-span-8 bg-zinc-900 border border-white/10 rounded-3xl p-8 md:p-12 relative overflow-hidden flex flex-col justify-center">
+        {/* Background Effects */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#e51f23]/10 rounded-full blur-[100px] pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 rounded-full blur-[100px] pointer-events-none"></div>
+
+        {/* Conteúdo Dinâmico */}
+        <div className="relative z-10 animate-in fade-in slide-in-from-right duration-500" key={activeCategory}>
+          <div className="flex items-start justify-between mb-6">
+            <div>
+              <h3 className="text-3xl md:text-5xl font-header font-bold text-white uppercase mb-2">
+                {categories[activeCategory].title}
+              </h3>
+              <p className="text-zinc-400 text-lg md:text-xl font-light">
+                {categories[activeCategory].description}
+              </p>
+            </div>
+            <div className="hidden md:flex w-20 h-20 bg-[#e51f23]/20 rounded-2xl items-center justify-center border border-[#e51f23]/30">
+               {React.createElement(categories[activeCategory].icon, { size: 40, className: "text-[#e51f23]" })}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
+            {categories[activeCategory].services.map((service, idx) => (
+              <div key={idx} className="flex items-center gap-3 p-4 bg-black/20 rounded-xl border border-white/5 hover:border-[#e51f23]/50 transition-colors group">
+                <div className="w-2 h-2 rounded-full bg-[#e51f23] group-hover:scale-150 transition-transform"></div>
+                <span className="text-zinc-200 font-medium">{service}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10 pt-8 border-t border-white/10 flex flex-col sm:flex-row gap-4">
+            <Button className="w-full sm:w-auto">
+              Agendar {categories[activeCategory].title}
+            </Button>
+            <Button variant="glass" className="w-full sm:w-auto">
+              Falar com Especialista
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showAllServices, setShowAllServices] = useState(false);
+  
+  // PARALLAX REFS
+  const [offsetY, setOffsetY] = useState(0);
+  const heroRef = useRef(null);
 
   useEffect(() => {
     let ticking = false;
@@ -127,6 +288,7 @@ export default function App() {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           setIsScrolled(window.scrollY > 50);
+          setOffsetY(window.scrollY);
           ticking = false;
         });
         ticking = true;
@@ -142,29 +304,6 @@ export default function App() {
     { name: 'Serviços', href: '#servicos', ariaLabel: 'Conheça nossos serviços' },
     { name: 'Contato', href: '#contato', ariaLabel: 'Entre em contato' },
   ];
-
-  const AlertCircle = (props) => <Activity {...props} />;
-
-  const servicesList = [
-    { icon: Settings, title: "Diagnóstico Completo", desc: "Checkup completo informando a real situação do veículo e o grau de necessidade de cada serviço." },
-    { icon: Thermometer, title: "Arrefecimento", desc: "Limpeza e reparo para manter o motor na temperatura ideal, evitando danos precoces." },
-    { icon: Activity, title: "Câmbio Automático", desc: "Troca de fluído e manutenção seguindo recomendações do fabricante." },
-    { icon: Disc, title: "Embreagem", desc: "Substituição e manutenção do kit de embreagem para garantir trocas suaves." },
-    { icon: ShieldCheck, title: "Preventiva e Corretiva", desc: "Serviços gerais de check-up, freios, óleo, filtro, alinhamento e balanceamento." },
-    { icon: Clock, title: "Revisões Periódicas", desc: "Inspeção de motor, transmissão e freios para garantir o melhor desempenho." },
-    { icon: Zap, title: "Suspensão Completa", desc: "Checagem para evitar acidentes, desgastes de pneus e garantir estabilidade." },
-    { icon: Droplets, title: "Injeção Eletrônica", desc: "Análise de sensores e atuadores para controlar a relação ar/combustível ideal." },
-    { icon: Wind, title: "Escapamentos", desc: "Redução de gases e ruídos, evitando aumento de consumo e desgaste do motor." },
-    { icon: AlertCircle, title: "Freios (ABS)", desc: "Manutenção do sistema anti-travamento para segurança total na frenagem." },
-    { icon: Settings, title: "Correia Dentada", desc: "Troca preventiva para garantir o sincronismo do motor e evitar danos graves." },
-    { icon: Droplets, title: "Troca de Óleo", desc: "Lubrificação essencial para prevenir desgaste, oxidação e corrosão do motor." },
-    { icon: Wind, title: "Ar-Condicionado", desc: "Higienização regular para eliminar fungos, bactérias e garantir saúde a bordo." },
-    { icon: Wrench, title: "Manutenção de Motores", desc: "Cuidados preventivos para prolongar a vida útil e performance do motor." },
-    { icon: CheckCircle, title: "Avaliação Pré-compra", desc: "Análise técnica antes de fechar negócio para evitar surpresas desagradáveis." },
-    { icon: Truck, title: "Serviço de Guincho", desc: "Parceria segura para transporte do seu veículo até nosso Centro Automotivo." },
-  ];
-
-  const displayedServices = showAllServices ? servicesList : servicesList.slice(0, 8);
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-[#e51f23] selection:text-white overflow-x-hidden relative">
@@ -207,19 +346,17 @@ export default function App() {
       >
         <div className="container mx-auto px-4 md:px-8 flex items-center justify-between">
           <a href="#" className="flex items-center gap-2 z-50 group" aria-label="Oficina Guará - Início">
-            {/* LOGO OFICIAL - Ajuste de tamanho AQUI */}
-            <div className="h-16 md:h-21 flex items-center"> {/* Aumentado de h-10/12 para h-16/20 */}
+            <div className="h-16 md:h-20 flex items-center">
                <img 
-                 src="/logo-guara.png" // COLOCAR SUA LOGO AQUI (pasta public)
+                 src="/logo-guara.png" 
                  alt="Oficina Guará Logo" 
                  className="h-full w-auto object-contain"
                  onError={(e) => {
                    e.target.onerror = null; 
                    e.target.style.display = 'none'; 
-                   e.target.nextSibling.style.display = 'flex'; // Mostra fallback se imagem falhar
+                   e.target.nextSibling.style.display = 'flex';
                  }}
                />
-               {/* FALLBACK: Mostra texto se a imagem não carregar */}
                <div className="hidden flex-col leading-none ml-2" style={{display: 'none'}}>
                   <span className="text-xl md:text-2xl font-bold font-header tracking-tighter text-white">
                     OFICINA <span className="text-[#e51f23]">GUARÁ</span>
@@ -276,27 +413,29 @@ export default function App() {
       </nav>
 
       {/* --- HERO SECTION --- */}
-      <header id="home" className="relative min-h-screen flex items-center pt-24 pb-12 overflow-hidden">
-        <div className="absolute inset-0 bg-zinc-900">
+      <header id="home" className="relative min-h-screen flex items-center pt-24 pb-12 overflow-hidden" ref={heroRef}>
+        <div 
+          className="absolute inset-0 bg-zinc-900 will-change-transform"
+          style={{ transform: `translateY(${offsetY * 0.5}px)` }}
+        >
            <img 
-              src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=1600&auto=format&fit=crop" // Foto de oficina mecânica moderna
+              src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=1600&auto=format&fit=crop"
               alt="Oficina mecânica especializada em caminhonetes e carros importados"
               className="w-full h-full object-cover opacity-40 mix-blend-overlay"
               loading="eager"
            />
         </div>
-        
         <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/80 to-transparent"></div>
 
         <div className="container mx-auto px-4 md:px-8 relative z-10 grid lg:grid-cols-2 gap-16 items-center">
-          <div className="space-y-8">
+          <div className="space-y-8" style={{ transform: `translateY(${offsetY * -0.1}px)` }}>
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#e51f23]/10 border border-[#e51f23]/30 rounded-full text-[#e51f23] text-xs font-bold uppercase tracking-[0.2em]">
               <Star size={12} fill="#e51f23" />
               Especialistas em 4x4 e Pick-ups
             </div>
             
             <h2 className="text-5xl md:text-7xl lg:text-8xl font-bold font-header leading-[0.9] text-white">
-              REVISÃO TOTAL DA SUA <br />
+              REVISÃO TOTAL DA SUA<br />
                <span className="text-[#e51f23]">CAMINHONETE</span>
             </h2>
             
@@ -307,10 +446,10 @@ export default function App() {
             
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Button className="!text-lg !px-10 h-14">
-                Avaliação Gratuita <ArrowRight className="inline ml-2" size={20} />
+                Fazer Avaliação <ArrowRight className="inline ml-2" size={20} />
               </Button>
               <Button variant="outline" className="!text-lg !px-10 h-14">
-                Nossos Serviços
+                Ver Serviços
               </Button>
             </div>
             
@@ -319,14 +458,8 @@ export default function App() {
             </div>
           </div>
           
-          <div className="hidden lg:flex justify-center items-center relative">
-            <GlassCard className="p-10 !bg-black/20 !border-white/10 flex flex-col items-center text-center relative z-10 max-w-sm mx-auto">
-                <MechanicAbstract />
-                <div className="absolute bottom-10 left-0 right-0 text-center">
-                    <p className="text-[#e51f23] font-bold uppercase tracking-widest text-sm mb-2">Tecnologia de Ponta</p>
-                    <h3 className="text-2xl font-header font-bold text-white">DIAGNÓSTICO PRECISO</h3>
-                </div>
-            </GlassCard>
+          <div className="flex justify-center items-center relative" style={{ transform: `translateY(${offsetY * 0.1}px)` }}>
+             <DiagnosticPanel />
           </div>
         </div>
       </header>
@@ -337,14 +470,15 @@ export default function App() {
           <div className="relative order-2 lg:order-1 group">
             <div className="absolute inset-0 bg-[#e51f23] translate-x-4 translate-y-4 rounded-2xl opacity-20"></div>
             <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-xl aspect-video lg:aspect-square">
-              {/* SUBSTITUA AQUI PELA FOTO REAL DA SUA OFICINA (ex: /foto-oficina.jpg) */}
-              <img 
-                src="https://images.unsplash.com/photo-1632823471565-1ec284d13cf6?q=80&w=1200&auto=format&fit=crop" // Foto placeholder de oficina real
-                alt="Equipe Oficina Guará trabalhando" 
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-              <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/90 to-transparent">
+              <div className="absolute inset-0 w-full h-[120%]" style={{ transform: `translateY(${(offsetY - 800) * 0.1}px)` }}>
+                <img 
+                  src="https://images.unsplash.com/photo-1632823471565-1ec284d13cf6?q=80&w=1200&auto=format&fit=crop"
+                  alt="Equipe Oficina Guará trabalhando" 
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/90 to-transparent z-10">
                 <p className="text-[#e51f23] font-bold uppercase tracking-widest text-xs mb-1">Localização Privilegiada</p>
                 <h4 className="text-2xl font-header font-bold text-white">GUARÁ II - BRASÍLIA/DF</h4>
               </div>
@@ -384,42 +518,29 @@ export default function App() {
         </div>
       </section>
 
-      {/* --- SERVIÇOS --- */}
+      {/* --- SERVIÇOS INTERATIVOS --- */}
       <section id="servicos" className="py-24 relative">
         <div className="container mx-auto px-4 md:px-8 relative z-10">
-          <SectionHeader title="Nossos Serviços" subtitle="Tudo para seu carro" />
+          <SectionHeader title="Nossos Serviços" subtitle="Excelência em Cada Detalhe" />
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {displayedServices.map((service, index) => (
-              <ServiceCard 
-                key={index}
-                icon={service.icon}
-                title={service.title}
-                description={service.desc}
-              />
-            ))}
-          </div>
-
-          <div className="mt-16 text-center">
-            <Button 
-              variant="outline" 
-              className="mx-auto !px-12 !py-4"
-              onClick={() => setShowAllServices(!showAllServices)}
-            >
-              {showAllServices ? (
-                <span className="flex items-center">Ver Menos <ChevronUp className="ml-2" /></span>
-              ) : (
-                <span className="flex items-center">Ver Todos os Serviços <ChevronDown className="ml-2" /></span>
-              )}
-            </Button>
-          </div>
+          {/* Componente Interativo de Serviços */}
+          <InteractiveServices />
         </div>
       </section>
 
       {/* --- CTA AVALIAÇÃO --- */}
-      <section className="py-24 relative overflow-hidden bg-[#e51f23]">
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="https://images.unsplash.com/photo-1487754180451-c456f719a1fc?q=80&w=2000&auto=format&fit=crop" 
+            alt="Oficina Background" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-[#e51f23]/90 mix-blend-multiply"></div>
+        </div>
+
         <div className="container mx-auto px-4 md:px-8 relative z-10 text-center">
-           <div className="max-w-4xl mx-auto bg-black/20 backdrop-blur-sm border border-white/20 rounded-3xl py-16 px-8 md:px-16 shadow-2xl">
+           <div className="max-w-4xl mx-auto bg-black/40 backdrop-blur-sm border border-white/20 rounded-3xl py-16 px-8 md:px-16 shadow-2xl">
               <h2 className="text-3xl md:text-5xl font-bold font-header text-white uppercase mb-6 drop-shadow-md">
                 Não caia em uma furada!
               </h2>
@@ -441,16 +562,13 @@ export default function App() {
       {/* --- FOOTER / CONTATO --- */}
       <footer id="contato" className="bg-zinc-950 pt-24 pb-12 border-t border-white/5 relative">
         <div className="container mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
-          
           <div className="space-y-6">
             <div className="flex items-center gap-2">
-               {/* LOGO FOOTER - Ajuste de tamanho AQUI */}
-               <img src="/logo-guara.png" alt="Oficina Guará" className="h-10 w-auto object-contain" // Aumentado de h-8 para h-10
+               <img src="/logo-guara.png" alt="Oficina Guará" className="h-10 w-auto object-contain" 
                  onError={(e) => {
                    e.target.onerror = null; e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex';
                  }}
                />
-               {/* Fallback Footer */}
                <div className="hidden items-center gap-2" style={{display: 'none'}}>
                  <div className="w-8 h-8 bg-[#e51f23] skew-x-[-10deg] flex items-center justify-center rounded-sm">
                     <Wrench className="text-white" size={16} />
