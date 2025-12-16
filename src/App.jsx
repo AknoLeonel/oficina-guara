@@ -348,7 +348,7 @@ export default function App() {
           <a href="#" className="flex items-center gap-2 z-50 group" aria-label="Oficina Guará - Início">
             <div className="h-16 md:h-20 flex items-center">
                <img 
-                 src="/logo-guara.png" 
+                 src="/fdsf.png" 
                  alt="Oficina Guará Logo" 
                  className="h-full w-auto object-contain"
                  onError={(e) => {
@@ -472,7 +472,7 @@ export default function App() {
             <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-xl aspect-video lg:aspect-square">
               <div className="absolute inset-0 w-full h-[120%]" style={{ transform: `translateY(${(offsetY - 800) * 0.1}px)` }}>
                 <img 
-                  src="https://images.unsplash.com/photo-1632823471565-1ec284d13cf6?q=80&w=1200&auto=format&fit=crop"
+                  src="trem.jpeg"
                   alt="Equipe Oficina Guará trabalhando" 
                   className="w-full h-full object-cover"
                   loading="lazy"
@@ -564,7 +564,7 @@ export default function App() {
         <div className="container mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
           <div className="space-y-6">
             <div className="flex items-center gap-2">
-               <img src="/logo-guara.png" alt="Oficina Guará" className="h-10 w-auto object-contain" 
+               <img src="/fdsf.png" alt="Oficina Guará" className="h-15 w-auto object-contain" 
                  onError={(e) => {
                    e.target.onerror = null; e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex';
                  }}
