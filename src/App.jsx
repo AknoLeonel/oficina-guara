@@ -356,8 +356,8 @@ const HomePage = ({ offsetY }) => {
                     </div>
                     
                     <h2 className="text-5xl md:text-7xl lg:text-8xl font-bold font-header leading-[0.9] text-white">
-                      REVISÃO TOTAL DA SUA<br />
-                       <span className="text-[#e51f23]">CAMINHONETE</span>
+                      REVISÃO TOTAL DO SEU<br />
+                       <span className="text-[#e51f23]">VEÍCULO</span>
                     </h2>
                     
                     <p className="text-zinc-300 text-lg md:text-xl max-w-xl leading-relaxed border-l-4 border-[#e51f23] pl-6">
@@ -368,9 +368,6 @@ const HomePage = ({ offsetY }) => {
                     <div className="flex flex-col sm:flex-row gap-4 pt-4">
                       <Button className="!text-lg !px-10 h-14">
                         Fazer Avaliação <ArrowRight className="inline ml-2" size={20} />
-                      </Button>
-                      <Button variant="outline" className="!text-lg !px-10 h-14">
-                        Ver Serviços
                       </Button>
                     </div>
                     
