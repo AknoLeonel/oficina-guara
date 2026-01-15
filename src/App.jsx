@@ -351,8 +351,8 @@ const HomePage = ({ offsetY }) => {
                     
                     {/* Texto Hero Responsivo */}
                     <h2 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold font-header leading-[0.9] text-white">
-                      REVISÃO TOTAL DA SUA<br />
-                       <span className="text-[#e51f23]">CAMINHONETE</span>
+                      REVISÃO TOTAL DO SEU<br />
+                       <span className="text-[#e51f23]">VEÍCULO</span>
                     </h2>
                     
                     <p className="text-zinc-300 text-base md:text-lg lg:text-xl max-w-xl leading-relaxed border-l-4 border-[#e51f23] pl-4 md:pl-6">
@@ -363,9 +363,6 @@ const HomePage = ({ offsetY }) => {
                     <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-4">
                       <Button className="!text-base md:!text-lg !px-8 md:!px-10 h-12 md:h-14">
                         Fazer Avaliação <ArrowRight className="inline ml-2" size={20} />
-                      </Button>
-                      <Button variant="outline" className="!text-base md:!text-lg !px-8 md:!px-10 h-12 md:h-14">
-                        Ver Serviços
                       </Button>
                     </div>
                     
@@ -395,7 +392,6 @@ const HomePage = ({ offsetY }) => {
                         />
                       </div>
                       <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 bg-gradient-to-t from-black/90 to-transparent z-10">
-                        <p className="text-[#e51f23] font-bold uppercase tracking-widest text-[10px] md:text-xs mb-1">Localização Privilegiada</p>
                         <h4 className="text-xl md:text-2xl font-header font-bold text-white">GUARÁ II - BRASÍLIA/DF</h4>
                       </div>
                     </div>
