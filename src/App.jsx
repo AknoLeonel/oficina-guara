@@ -393,7 +393,7 @@ const HomePage = ({ offsetY }) => {
                     <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-xl aspect-video lg:aspect-square">
                       <div className="absolute inset-0 w-full h-[120%]" style={{ transform: `translateY(${(offsetY - 800) * 0.1}px)` }}>
                         <img 
-                          src="trem.jpeg"
+                          src="4.png"
                           alt="Equipe Oficina Guará trabalhando" 
                           className="w-full h-full object-cover"
                           loading="lazy"
