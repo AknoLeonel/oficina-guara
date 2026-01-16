@@ -186,13 +186,13 @@ const DiagnosticPanel = () => {
   );
 };
 
-// --- SERVIÇOS INTERATIVOS (MODIFICADO PARA USAR LINKS DE NAVEGAÇÃO) ---
+// --- SERVIÇOS INTERATIVOS ---
 const InteractiveServices = () => {
   const [activeCategory, setActiveCategory] = useState(0);
 
   return (
     <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 md:gap-8 h-auto lg:h-[500px]">
-      {/* Menu Lateral de Categorias (Stack no mobile, lateral no desktop) */}
+      {/* Menu Lateral de Categorias */}
       <div className="w-full lg:col-span-4 flex flex-col gap-3 md:gap-4 order-1">
         {DATA_CATEGORIES.map((cat, index) => (
           <button
@@ -215,7 +215,7 @@ const InteractiveServices = () => {
         ))}
       </div>
 
-      {/* Painel de Detalhes (Visualização do Serviço) */}
+      {/* Painel de Detalhes */}
       <div className="w-full lg:col-span-8 bg-zinc-900 border border-white/10 rounded-3xl p-6 md:p-12 relative overflow-hidden flex flex-col justify-center order-2">
         {/* Background Effects */}
         <div className="absolute top-0 right-0 w-32 h-32 md:w-64 md:h-64 bg-[#e51f23]/10 rounded-full blur-[60px] md:blur-[100px] pointer-events-none"></div>
@@ -260,6 +260,42 @@ const InteractiveServices = () => {
       </div>
     </div>
   );
+};
+
+// --- CARROSSEL INFINITO (IMAGENS LOCAIS) ---
+const InfiniteCarousel = () => {
+    // ATENÇÃO: As imagens devem estar na pasta 'public' com estes nomes exatos
+    // ou você deve alterar os nomes abaixo para corresponder aos seus arquivos.
+    const images = [
+      "/foto (1).webp",
+      "/foto (2).webp",
+      "/foto (3).webp",
+      "/foto (4).webp",
+      "/foto (5).webp",
+      "/foto (6).webp",
+      "/foto (7).webp",
+      "/foto (8).webp"
+    ];
+  
+    return (
+      <section className="py-8 bg-zinc-950 border-t border-b border-white/5 overflow-hidden relative group">
+         <div className="container mx-auto px-4 mb-6">
+            <h4 className="text-zinc-500 font-bold uppercase text-xs tracking-widest text-center">Resultados Reais</h4>
+         </div>
+
+        <div className="absolute inset-y-0 left-0 w-20 md:w-32 bg-gradient-to-r from-zinc-950 to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute inset-y-0 right-0 w-20 md:w-32 bg-gradient-to-l from-zinc-950 to-transparent z-10 pointer-events-none"></div>
+        
+        <div className="flex w-max animate-scroll gap-4 md:gap-6 px-4 hover:[animation-play-state:paused]">
+          {[...images, ...images].map((img, i) => (
+            <div key={i} className="w-64 h-40 md:w-96 md:h-64 rounded-xl overflow-hidden border border-white/10 relative group/item shrink-0 bg-zinc-900">
+               <img src={img} alt="Trabalho Realizado" className="w-full h-full object-cover transition-transform duration-700 group-hover/item:scale-110 grayscale group-hover/item:grayscale-0" />
+               <div className="absolute inset-0 bg-[#e51f23]/20 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300"></div>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
 };
 
 // --- NOVA PÁGINA: DETALHES DO SERVIÇO ---
@@ -331,7 +367,7 @@ const ServicePage = () => {
     );
 };
 
-// --- HOME PAGE (SEU CONTEÚDO ORIGINAL REUNIDO AQUI) ---
+// --- HOME PAGE ---
 const HomePage = ({ offsetY }) => {
     return (
         <>
@@ -360,7 +396,7 @@ const HomePage = ({ offsetY }) => {
                     {/* Texto Hero Responsivo */}
                     <h2 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold font-header leading-[0.9] text-white">
                       REVISÃO TOTAL DO SEU<br />
-                       <span className="text-[#e51f23]">VEÍCULO</span>
+                        <span className="text-[#e51f23]">VEÍCULO</span>
                     </h2>
                     
                     <p className="text-zinc-300 text-base md:text-lg lg:text-xl max-w-xl leading-relaxed border-l-4 border-[#e51f23] pl-4 md:pl-6">
@@ -380,7 +416,7 @@ const HomePage = ({ offsetY }) => {
                   </div>
                   
                   <div className="flex justify-center items-center relative mt-8 lg:mt-0" style={{ transform: `translateY(${offsetY * 0.1}px)` }}>
-                     <DiagnosticPanel />
+                      <DiagnosticPanel />
                   </div>
                 </div>
             </header>
@@ -423,6 +459,7 @@ const HomePage = ({ offsetY }) => {
                         Hoje somos um centro automotivo especializado, com equipamentos de ponta e profissionais qualificados 
                         com treinamentos constantes. Atendemos nacionais e importados com a confiança que você merece.
                       </p>
+                      
                       <div className="flex flex-col md:flex-row gap-6 mt-8 border-t border-white/10 pt-6">
                           <div>
                              <span className="block text-2xl md:text-3xl font-bold text-[#e51f23] font-header">100%</span>
@@ -445,6 +482,9 @@ const HomePage = ({ offsetY }) => {
                   <InteractiveServices />
                 </div>
             </section>
+
+            {/* --- CARROSSEL INFINITO (INSERIDO AQUI) --- */}
+            <InfiniteCarousel />
 
             {/* --- CTA AVALIAÇÃO --- */}
             <section className="py-16 md:py-24 relative overflow-hidden">
@@ -596,9 +636,9 @@ const Navbar = ({ isScrolled, setIsMenuOpen, isMenuOpen }) => {
                    <p className="text-center text-zinc-500 uppercase tracking-widest text-xs mb-4 mt-2">Serviços</p>
                    <div className="grid grid-cols-1 gap-3">
                       {DATA_CATEGORIES.map(cat => (
-                         <Link key={cat.id} to={`/servicos/${cat.id}`} className="block w-full py-3 text-lg font-header uppercase font-bold text-center text-zinc-300 border border-white/5 rounded-xl hover:border-[#e51f23] hover:bg-[#e51f23]/10">
-                            {cat.title}
-                         </Link>
+                          <Link key={cat.id} to={`/servicos/${cat.id}`} className="block w-full py-3 text-lg font-header uppercase font-bold text-center text-zinc-300 border border-white/5 rounded-xl hover:border-[#e51f23] hover:bg-[#e51f23]/10">
+                             {cat.title}
+                          </Link>
                       ))}
                    </div>
                </li>
@@ -660,6 +700,14 @@ export default function App() {
             }
             .animate-bounce-slow {
                 animation: bounce-slow 3s infinite ease-in-out;
+            }
+            /* ANIMAÇÃO DO CARROSSEL */
+            @keyframes scroll {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(-50%); }
+            }
+            .animate-scroll {
+                animation: scroll 30s linear infinite;
             }
         `}</style>
 
