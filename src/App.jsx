@@ -69,7 +69,6 @@ MechanicAbstract.displayName = 'MechanicAbstract';
 
 // --- COMPONENTES UI ---
 const Button = ({ children, variant = 'primary', className = '', ...props }) => {
-  // Ajuste de width: full no mobile e auto no desktop
   const baseStyle = "w-full sm:w-auto px-6 py-3 rounded-xl font-bold transition-transform duration-200 active:scale-95 uppercase tracking-wider flex justify-center items-center text-sm md:text-base";
   
   const variants = {
@@ -97,15 +96,15 @@ const SectionHeader = ({ title, subtitle }) => (
   </div>
 );
 
+// BOTÃO FLUTUANTE DO WHATSAPP ATUALIZADO
 const WhatsAppButton = () => (
   <a
-    href="https://wa.me/556135679250"
+    href="https://wa.me/5561982079250?text=Gostaria%20de%20informa%C3%A7%C3%B5es%20oficina%20guara"
     target="_blank"
     rel="noopener noreferrer"
     className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 bg-[#25D366] text-white p-3 md:p-4 rounded-full shadow-lg hover:bg-[#20bd5a] transition-all duration-300 hover:scale-110 flex items-center justify-center group animate-bounce-slow"
     aria-label="Fale conosco no WhatsApp"
   >
-    {/* Logo Original do WhatsApp (SVG) */}
     <svg 
       viewBox="0 0 24 24" 
       fill="currentColor" 
@@ -167,9 +166,12 @@ const DiagnosticPanel = () => {
               <p className="text-zinc-300 text-xs md:text-sm leading-relaxed mb-4">
                 {selectedIssue?.message}
               </p>
-              <Button className="w-full text-xs md:text-sm py-2">
-                Agendar Diagnóstico
-              </Button>
+              {/* BOTÃO DIAGNÓSTICO ATUALIZADO COM O LINK */}
+              <a href="https://wa.me/5561982079250?text=Gostaria%20de%20informa%C3%A7%C3%B5es%20oficina%20guara" target="_blank" rel="noopener noreferrer" className="block w-full">
+                <Button className="w-full text-xs md:text-sm py-2">
+                  Agendar Diagnóstico
+                </Button>
+              </a>
             </div>
           </div>
         </div>
@@ -252,9 +254,12 @@ const InteractiveServices = () => {
                  Ver Detalhes
                </Button>
             </Link>
-            <Button variant="glass" className="w-full sm:w-auto">
-              Falar com Especialista
-            </Button>
+            {/* BOTÃO FALAR COM ESPECIALISTA ATUALIZADO */}
+            <a href="https://wa.me/5561982079250?text=Gostaria%20de%20informa%C3%A7%C3%B5es%20oficina%20guara" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+              <Button variant="glass" className="w-full">
+                Falar com Especialista
+              </Button>
+            </a>
           </div>
         </div>
       </div>
@@ -264,8 +269,6 @@ const InteractiveServices = () => {
 
 // --- CARROSSEL INFINITO (IMAGENS LOCAIS) ---
 const InfiniteCarousel = () => {
-    // ATENÇÃO: As imagens devem estar na pasta 'public' com estes nomes exatos
-    // ou você deve alterar os nomes abaixo para corresponder aos seus arquivos.
     const images = [
       "/foto (1).webp",
       "/foto (2).webp",
@@ -338,9 +341,12 @@ const ServicePage = () => {
                             <p className="text-zinc-400 text-base md:text-lg leading-relaxed mb-6 md:mb-8">
                                 {category.fullDescription}
                             </p>
-                            <Button className="w-full sm:w-auto">
-                                <Phone size={18} className="mr-2" /> Solicitar Orçamento
-                            </Button>
+                            {/* BOTÃO ORÇAMENTO ATUALIZADO */}
+                            <a href="https://wa.me/5561982079250?text=Gostaria%20de%20informa%C3%A7%C3%B5es%20oficina%20guara" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto inline-block">
+                              <Button className="w-full sm:w-auto">
+                                  <Phone size={18} className="mr-2" /> Solicitar Orçamento
+                              </Button>
+                            </a>
                         </div>
                         
                         <div className="bg-black/30 rounded-2xl p-6 border border-white/5">
@@ -405,9 +411,12 @@ const HomePage = ({ offsetY }) => {
                     </p>
                     
                     <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-4">
-                      <Button className="!text-base md:!text-lg !px-8 md:!px-10 h-12 md:h-14">
-                        Fazer Avaliação <ArrowRight className="inline ml-2" size={20} />
-                      </Button>
+                      {/* BOTÃO HERO ATUALIZADO */}
+                      <a href="https://wa.me/5561982079250?text=Gostaria%20de%20informa%C3%A7%C3%B5es%20oficina%20guara" target="_blank" rel="noopener noreferrer">
+                        <Button className="!text-base md:!text-lg !px-8 md:!px-10 h-12 md:h-14 w-full">
+                          Fazer Avaliação <ArrowRight className="inline ml-2" size={20} />
+                        </Button>
+                      </a>
                     </div>
                     
                     <div className="flex flex-wrap items-center gap-4 md:gap-6 pt-4 md:pt-8 text-zinc-500 font-header text-xs md:text-sm tracking-widest">
@@ -483,7 +492,7 @@ const HomePage = ({ offsetY }) => {
                 </div>
             </section>
 
-            {/* --- CARROSSEL INFINITO (INSERIDO AQUI) --- */}
+            {/* --- CARROSSEL INFINITO --- */}
             <InfiniteCarousel />
 
             {/* --- CTA AVALIAÇÃO --- */}
@@ -506,9 +515,12 @@ const HomePage = ({ offsetY }) => {
                         Antes de fechar negócio ou viajar, traga seu veículo para uma <strong className="text-white font-bold border-b-2 border-white">Avaliação Gratuita</strong> e evite surpresas desagradáveis.
                       </p>
                       <div className="flex flex-col md:flex-row justify-center gap-4">
-                         <Button variant="primary" className="!bg-white !text-[#e51f23] hover:!bg-zinc-100 border-none shadow-xl font-bold">
-                            <Phone size={20} className="mr-2" /> Agendar Agora
-                         </Button>
+                        {/* BOTÃO AGENDAR AGORA ATUALIZADO */}
+                         <a href="https://wa.me/5561982079250?text=Gostaria%20de%20informa%C3%A7%C3%B5es%20oficina%20guara" target="_blank" rel="noopener noreferrer">
+                           <Button variant="primary" className="!bg-white !text-[#e51f23] hover:!bg-zinc-100 border-none shadow-xl font-bold w-full">
+                              <Phone size={20} className="mr-2" /> Agendar Agora
+                           </Button>
+                         </a>
                          <Button variant="glass" className="font-bold">
                             <MapPin size={20} className="mr-2" /> Como Chegar
                          </Button>
@@ -608,10 +620,13 @@ const Navbar = ({ isScrolled, setIsMenuOpen, isMenuOpen }) => {
             </a>
           </div>
 
+          {/* BOTÃO LIGAR NAVBAR ATUALIZADO */}
           <div className="hidden md:flex">
+            <a href="tel:+5561982079250">
              <Button variant="primary" className="!py-2 !px-6 text-sm" aria-label="Ligar para oficina">
-               <Phone size={16} className="mr-2" /> (61) 3567-9250
+               <Phone size={16} className="mr-2" /> (61) 98207-9250
              </Button>
+            </a>
           </div>
 
           <button 
@@ -646,7 +661,10 @@ const Navbar = ({ isScrolled, setIsMenuOpen, isMenuOpen }) => {
                <li className="w-full mt-2">
                   <a href="/#contato" onClick={() => setIsMenuOpen(false)} className="block w-full py-3 text-2xl font-header uppercase font-bold text-center text-white border-b border-white/10 hover:text-[#e51f23]">Contato</a>
                </li>
-               <Button onClick={() => setIsMenuOpen(false)} className="w-full mt-8">Ligar Agora</Button>
+                {/* BOTÃO LIGAR MENU MOBILE ATUALIZADO */}
+               <a href="tel:+5561982079250" className="w-full mt-8 block">
+                 <Button onClick={() => setIsMenuOpen(false)} className="w-full">Ligar Agora</Button>
+               </a>
             </ul>
           </div>
         </div>
@@ -777,11 +795,12 @@ export default function App() {
                     </div>
                 </div>
 
+                {/* TELEFONE RODAPÉ ATUALIZADO */}
                 <div className="p-4 flex items-start gap-4 bg-zinc-900/50 rounded-xl border border-zinc-800 hover:border-[#e51f23]/30 transition-colors group">
                     <Phone size={24} className="text-[#e51f23] shrink-0 mt-1" />
                     <div>
                         <h5 className="text-white font-bold text-sm uppercase mb-1">Telefone</h5>
-                        <p className="text-zinc-400 text-sm text-lg font-bold">(61) 3567-9250</p>
+                        <p className="text-zinc-400 text-sm text-lg font-bold">(61) 98207-9250</p>
                         <p className="text-zinc-500 text-xs mt-1">Seg - Sex: 08h às 18h</p>
                     </div>
                 </div>
