@@ -1,16 +1,33 @@
-# React + Vite
+# Oficina Guará
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Site da oficina especialista em 4x4 e pick-ups no Guará II, Brasília.
 
-Currently, two official plugins are available:
+[![Ver site no ar](https://img.shields.io/badge/Ver%20site%20no%20ar-00F5FF?style=for-the-badge&labelColor=0D1117)](https://oficina-guara.vercel.app) [![Portfólio](https://img.shields.io/badge/Portfólio-FF00E4?style=for-the-badge&labelColor=0D1117)](https://aknoleonel.github.io)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Sobre o projeto
 
-## React Compiler
+Site de um centro automotivo que começou na garagem de casa e hoje atende Toyota, Nissan, GM, Ford, VW, Mitsubishi e outras marcas. O destaque é um diagnóstico rápido em que o cliente escolhe o sintoma do carro e já é direcionado para o atendimento certo.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Destaques
 
-## Expanding the ESLint configuration
+- Seletor interativo de sintomas: barulho estranho, luz no painel, carro falhando, freio ruim ou revisão
+- Menu de serviços por área: motor, elétrica, suspensão e freios, conforto e clima
+- História da oficina e contato direto por WhatsApp e telefone
+- Navegação entre páginas com React Router
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Tecnologias
+
+React · Vite · React Router · Lucide Icons
+
+## Rodando localmente
+
+```bash
+npm install
+npm run dev
+```
+
+Para gerar a versão de produção: `npm run build`.
+
+---
+
+Desenvolvido por [Leonel Paiva](https://github.com/AknoLeonel) · [Instagram](https://www.instagram.com/muvageof) · [Mais projetos](https://aknoleonel.github.io)
