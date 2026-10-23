@@ -15,6 +15,13 @@ Site de um centro automotivo que começou na garagem de casa e hoje atende Toyot
 - História da oficina e contato direto por WhatsApp e telefone
 - Navegação entre páginas com React Router
 
+## Landing pages (anúncios)
+
+As 12 páginas do guia da Agência Empatia (out/2026) ficam em `src/landingPages.js`: H1, title, meta description, alt do banner e mensagem de WhatsApp de cada uma. No `npm run build`, o `scripts/prerender.mjs` gera um HTML por página com o SEO já preenchido, além do `sitemap.xml` e do `robots.txt`.
+
+- Banners: `public/banners/banner-<página>-mobile.webp` (1080×1350, até 200 KB) e `-desktop.webp` (1920×700, até 250 KB). Para trocar pela foto da produtora, basta substituir o arquivo com o mesmo nome.
+- Domínio, GTM e WhatsApp: `src/siteConfig.js`.
+
 ## Tecnologias
 
 React · Vite · React Router · Lucide Icons
