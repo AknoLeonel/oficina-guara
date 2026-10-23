@@ -110,7 +110,7 @@ const upsertHeadTag = (tag, attrs, valueAttr, value) => {
   el.setAttribute(valueAttr, value);
 };
 
-const usePageMeta = ({ title, description, path, image }) => {
+const usePageMeta = ({ title, description, path, image, noindex = false }) => {
   useEffect(() => {
     const url = SITE_URL + path;
     document.title = title;
@@ -120,7 +120,8 @@ const usePageMeta = ({ title, description, path, image }) => {
     upsertHeadTag('meta', { property: 'og:description' }, 'content', description);
     upsertHeadTag('meta', { property: 'og:url' }, 'content', url);
     if (image) upsertHeadTag('meta', { property: 'og:image' }, 'content', SITE_URL + image);
-  }, [title, description, path, image]);
+    upsertHeadTag('meta', { name: 'robots' }, 'content', noindex ? 'noindex' : 'index, follow');
+  }, [title, description, path, image, noindex]);
 };
 
 // BOTÃO FLUTUANTE DO WHATSAPP (abre com a mensagem da landing page atual)
@@ -308,8 +309,7 @@ const InfiniteCarousel = () => {
       "/foto (4).webp",
       "/foto (5).webp",
       "/foto (6).webp",
-      "/foto (7).webp",
-      "/foto (8).webp"
+      "/foto (7).webp"
     ];
   
     return (
@@ -343,6 +343,7 @@ const ServicePage = () => {
         title: category ? `${category.title} no Guará II | Oficina Guará` : HOME_META.title,
         description: category ? category.fullDescription : HOME_META.description,
         path: `/servicos/${id}`,
+        noindex: !category,
     });
 
     useEffect(() => {
@@ -412,6 +413,11 @@ const ServicePage = () => {
 };
 
 // --- LANDING PAGES (GUIA DAS 12 NOVAS PÁGINAS) ---
+const LANDING_GROUPS = [
+    { id: 'caminhonete', title: 'Caminhonetes', icon: Truck },
+    { id: 'servico', title: 'Serviços Diesel', icon: Wrench },
+];
+
 // Corpo provisório: será ajustado ao modelo das páginas do guia de setembro.
 const LANDING_STEPS = [
     { icon: ShieldCheck, title: 'Avaliação gratuita', text: 'Você traz a caminhonete e avaliamos sem compromisso.' },
@@ -452,7 +458,7 @@ const LandingPage = ({ page }) => {
                                 <MapPin size={14} className="text-[#ec7337]" />
                                 <span className="text-[#ec7337] text-[10px] md:text-xs font-bold uppercase tracking-widest">Oficina do Éder · Guará II</span>
                             </div>
-                            <h1 className="text-[26px] leading-tight sm:text-4xl md:text-3xl lg:text-5xl font-bold font-header text-white uppercase">
+                            <h1 className="text-[26px] leading-tight sm:text-4xl md:text-3xl lg:text-4xl xl:text-5xl font-bold font-header text-white uppercase">
                                 {page.h1}
                             </h1>
                         </div>
@@ -462,7 +468,7 @@ const LandingPage = ({ page }) => {
 
             {/* CHAMADA */}
             <section className="border-b border-white/5">
-                <div className="container mx-auto px-4 md:px-8 py-8 md:py-12 grid lg:grid-cols-2 gap-6 lg:gap-12 items-center">
+                <div className="container mx-auto px-4 md:px-8 py-8 md:py-12 grid lg:grid-cols-[1fr_auto] gap-6 lg:gap-12 items-center">
                     <p className="text-zinc-300 text-base md:text-xl leading-relaxed border-l-4 border-[#ec7337] pl-4 md:pl-6">
                         {page.intro}
                     </p>
@@ -555,7 +561,7 @@ const LandingPage = ({ page }) => {
 };
 
 const NotFoundPage = () => {
-    usePageMeta({ title: 'Página não encontrada | Oficina Guará', description: HOME_META.description, path: '/' });
+    usePageMeta({ title: 'Página não encontrada | Oficina Guará', description: HOME_META.description, path: '/', noindex: true });
 
     return (
         <div className="min-h-screen pt-32 pb-16 text-center text-white px-4">
@@ -686,6 +692,35 @@ const HomePage = ({ offsetY }) => {
                 </div>
             </section>
 
+            {/* --- ESPECIALIDADES (links para as landing pages) --- */}
+            <section id="especialidades" className="py-16 md:py-24 bg-zinc-900 border-t border-white/5">
+                <div className="container mx-auto px-4 md:px-8">
+                  <SectionHeader title="Especialidades" subtitle="Caminhonetes e Diesel" />
+                  <div className="space-y-10">
+                    {LANDING_GROUPS.map((group) => (
+                      <div key={group.id}>
+                        <h3 className="text-zinc-500 font-bold uppercase text-xs tracking-widest mb-4">{group.title}</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                          {LANDING_PAGES.filter((page) => page.group === group.id).map((page) => (
+                            <Link
+                              key={page.slug}
+                              to={page.path}
+                              className="flex items-center justify-between gap-3 p-4 md:p-5 bg-black/30 rounded-xl border border-white/5 hover:border-[#ec7337]/60 hover:bg-[#ec7337]/10 transition-colors group"
+                            >
+                              <span className="flex items-center gap-3">
+                                <group.icon size={18} className="text-[#ec7337] shrink-0" />
+                                <span className="text-white font-header font-bold uppercase text-sm md:text-base">{page.name}</span>
+                              </span>
+                              <ArrowRight size={16} className="text-zinc-500 group-hover:text-[#ec7337] transition-colors shrink-0" />
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+            </section>
+
             {/* --- CARROSSEL INFINITO --- */}
             <InfiniteCarousel />
 
@@ -728,13 +763,15 @@ const HomePage = ({ offsetY }) => {
 
 // --- NAVBAR PRINCIPAL ---
 const Navbar = ({ isScrolled, setIsMenuOpen, isMenuOpen }) => {
-    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [openDropdown, setOpenDropdown] = useState(null);
     const location = useLocation();
 
     useEffect(() => {
         setIsMenuOpen(false);
-        setDropdownOpen(false);
+        setOpenDropdown(null);
     }, [location, setIsMenuOpen]);
+
+    const toggleDropdown = (name) => setOpenDropdown(openDropdown === name ? null : name);
 
     return (
         <nav 
@@ -767,30 +804,30 @@ const Navbar = ({ isScrolled, setIsMenuOpen, isMenuOpen }) => {
           </Link>
 
           {/* DESKTOP MENU */}
-          <div className="hidden md:flex items-center gap-1 bg-zinc-900/50 p-1.5 rounded-full border border-white/10">
+          <div className="hidden lg:flex items-center gap-1 bg-zinc-900/50 p-1.5 rounded-full border border-white/10">
             <Link 
                 to="/"
-                className="px-6 py-2 text-sm uppercase tracking-widest font-bold text-zinc-300 hover:text-white hover:bg-[#ec7337] rounded-full transition-colors duration-300"
+                className="px-3 xl:px-6 py-2 text-sm uppercase tracking-wide xl:tracking-widest font-bold text-zinc-300 hover:text-white hover:bg-[#ec7337] rounded-full transition-colors duration-300"
             >
                 Início
             </Link>
 
             <a 
                 href="/#sobre"
-                className="px-6 py-2 text-sm uppercase tracking-widest font-bold text-zinc-300 hover:text-white hover:bg-[#ec7337] rounded-full transition-colors duration-300"
+                className="px-3 xl:px-6 py-2 text-sm uppercase tracking-wide xl:tracking-widest font-bold text-zinc-300 hover:text-white hover:bg-[#ec7337] rounded-full transition-colors duration-300"
             >
                 Sobre
             </a>
             
-            <div className="relative group" onMouseEnter={() => setDropdownOpen(true)} onMouseLeave={() => setDropdownOpen(false)}>
+            <div className="relative group" onMouseEnter={() => setOpenDropdown('servicos')} onMouseLeave={() => setOpenDropdown(null)}>
                 <button 
-                    className={`flex items-center gap-1 px-6 py-2 text-sm uppercase tracking-widest font-bold text-zinc-300 hover:text-white rounded-full transition-colors ${dropdownOpen ? 'text-white' : ''}`}
-                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    className={`flex items-center gap-1 px-3 xl:px-6 py-2 text-sm uppercase tracking-wide xl:tracking-widest font-bold text-zinc-300 hover:text-white rounded-full transition-colors ${openDropdown === 'servicos' ? 'text-white' : ''}`}
+                    onClick={() => toggleDropdown('servicos')}
                 >
-                    Serviços <ChevronDown size={14} className={`transition-transform duration-300 ${dropdownOpen ? 'rotate-180' : ''}`} />
+                    Serviços <ChevronDown size={14} className={`transition-transform duration-300 ${openDropdown === 'servicos' ? 'rotate-180' : ''}`} />
                 </button>
                 
-                <div className={`absolute top-full left-0 mt-2 w-64 bg-zinc-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden transition-all duration-300 origin-top ${dropdownOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'}`}>
+                <div className={`absolute top-full left-0 mt-2 w-64 bg-zinc-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden transition-all duration-300 origin-top ${openDropdown === 'servicos' ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'}`}>
                     <div className="p-2 flex flex-col gap-1">
                         {DATA_CATEGORIES.map((cat) => (
                             <Link 
@@ -806,16 +843,48 @@ const Navbar = ({ isScrolled, setIsMenuOpen, isMenuOpen }) => {
                 </div>
             </div>
 
+            {/* ESPECIALIDADES (landing pages do guia) */}
+            <div className="relative group" onMouseEnter={() => setOpenDropdown('especialidades')} onMouseLeave={() => setOpenDropdown(null)}>
+                <button 
+                    className={`flex items-center gap-1 px-3 xl:px-6 py-2 text-sm uppercase tracking-wide xl:tracking-widest font-bold text-zinc-300 hover:text-white rounded-full transition-colors ${openDropdown === 'especialidades' ? 'text-white' : ''}`}
+                    onClick={() => toggleDropdown('especialidades')}
+                >
+                    Especialidades <ChevronDown size={14} className={`transition-transform duration-300 ${openDropdown === 'especialidades' ? 'rotate-180' : ''}`} />
+                </button>
+                
+                <div className={`absolute top-full right-0 mt-2 w-[540px] bg-zinc-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden transition-all duration-300 origin-top ${openDropdown === 'especialidades' ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                    <div className="p-4 grid grid-cols-2 gap-4">
+                        {LANDING_GROUPS.map((group) => (
+                            <div key={group.id}>
+                                <p className="px-4 pb-2 text-[10px] text-zinc-500 font-bold uppercase tracking-widest">{group.title}</p>
+                                <div className="flex flex-col gap-1">
+                                    {LANDING_PAGES.filter((page) => page.group === group.id).map((page) => (
+                                        <Link 
+                                            key={page.slug} 
+                                            to={page.path}
+                                            className="flex items-center gap-3 px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors text-xs font-bold uppercase"
+                                        >
+                                            <group.icon size={14} className="text-[#ec7337] shrink-0" />
+                                            {page.name}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
             <a 
                 href="/#contato"
-                className="px-6 py-2 text-sm uppercase tracking-widest font-bold text-zinc-300 hover:text-white hover:bg-[#ec7337] rounded-full transition-colors duration-300"
+                className="px-3 xl:px-6 py-2 text-sm uppercase tracking-wide xl:tracking-widest font-bold text-zinc-300 hover:text-white hover:bg-[#ec7337] rounded-full transition-colors duration-300"
             >
                 Contato
             </a>
           </div>
 
           {/* BOTÃO LIGAR NAVBAR ATUALIZADO */}
-          <div className="hidden md:flex">
+          <div className="hidden xl:flex">
             <a href="tel:+5561982079250">
              <Button variant="primary" className="!py-2 !px-6 text-sm" aria-label="Ligar para oficina">
                <Phone size={16} className="mr-2" /> (61) 98207-9250
@@ -824,7 +893,7 @@ const Navbar = ({ isScrolled, setIsMenuOpen, isMenuOpen }) => {
           </div>
 
           <button 
-            className="md:hidden text-white z-50 p-2 bg-[#ec7337] rounded-lg shadow-lg"
+            className="lg:hidden text-white z-50 p-2 bg-[#ec7337] rounded-lg shadow-lg"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
           >
@@ -852,6 +921,17 @@ const Navbar = ({ isScrolled, setIsMenuOpen, isMenuOpen }) => {
                    </div>
                </li>
 
+               <li className="w-full">
+                   <p className="text-center text-zinc-500 uppercase tracking-widest text-xs mb-4 mt-2">Especialidades</p>
+                   <div className="grid grid-cols-2 gap-2">
+                      {LANDING_GROUPS.flatMap((group) => LANDING_PAGES.filter((page) => page.group === group.id)).map(page => (
+                          <Link key={page.slug} to={page.path} className="flex items-center justify-center min-h-12 px-2 py-2 text-sm font-header uppercase font-bold text-center text-zinc-300 border border-white/5 rounded-xl hover:border-[#ec7337] hover:bg-[#ec7337]/10">
+                             {page.name}
+                          </Link>
+                      ))}
+                   </div>
+               </li>
+
                <li className="w-full mt-2">
                   <a href="/#contato" onClick={() => setIsMenuOpen(false)} className="block w-full py-3 text-2xl font-header uppercase font-bold text-center text-white border-b border-white/10 hover:text-[#ec7337]">Contato</a>
                </li>
@@ -866,8 +946,9 @@ const Navbar = ({ isScrolled, setIsMenuOpen, isMenuOpen }) => {
     );
 };
 
-// --- APP PRINCIPAL (ROTEADOR) ---
-export default function App() {
+// --- APP PRINCIPAL ---
+// AppShell recebe o roteador de fora: BrowserRouter no navegador, StaticRouter no build (entry-server.jsx).
+export function AppShell() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [offsetY, setOffsetY] = useState(0);
@@ -889,7 +970,6 @@ export default function App() {
   }, []);
 
   return (
-    <BrowserRouter>
         <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-[#ec7337] selection:text-white overflow-x-hidden relative">
         <style>{`
             @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Inter:wght@300;400;600&display=swap');
@@ -1044,6 +1124,13 @@ export default function App() {
             </div>
         </footer>
         </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppShell />
     </BrowserRouter>
   );
 }
