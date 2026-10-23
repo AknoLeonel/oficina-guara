@@ -18,3 +18,13 @@ export const HOME_META = {
   title: 'Oficina Guará - Especialista em 4x4 e Pick-ups | Guará DF',
   description: 'Centro automotivo no Guará II especializado em revisão de caminhonetes, 4x4, Toyota, Ford e GM. Diagnóstico completo, injeção eletrônica e mecânica de confiança.',
 };
+
+// Redes sociais: só aparecem no rodapé quando preenchidas (ex.: 'https://instagram.com/oficinaguara').
+export const SOCIAL_LINKS = {
+  instagram: '',
+  facebook: '',
+};
+
+export const EMAIL = 'oficinadoeder@gmail.com';
+export const MAPS_LINK = 'https://www.google.com/maps/search/?api=1&query=' +
+  encodeURIComponent('Oficina do Éder, Área Especial 2A, Conjunto A, Lote 6, Guará II, Brasília - DF, 71070-625');
