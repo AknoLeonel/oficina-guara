@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { GTM_ID, GOOGLE_ADS_ID } from './src/siteConfig.js'
+import { GTM_ID, GOOGLE_TAG_IDS } from './src/siteConfig.js'
 
 // Google Tag Manager em todas as páginas (o ID fica em src/siteConfig.js)
 const gtm = () => ({
@@ -22,21 +22,21 @@ const gtm = () => ({
   },
 })
 
-// Tag do Google Ads (gtag.js) em todas as páginas (o ID fica em src/siteConfig.js)
-const googleAds = () => ({
-  name: 'google-ads',
+// Tags do Google (gtag.js: Google Ads e Analytics) em todas as páginas (IDs em src/siteConfig.js)
+const googleTags = () => ({
+  name: 'google-tags',
   transformIndexHtml() {
-    if (!GOOGLE_ADS_ID) return []
+    if (!GOOGLE_TAG_IDS.length) return []
     return [
       {
         tag: 'script',
-        attrs: { async: true, src: `https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}` },
+        attrs: { async: true, src: `https://www.googletagmanager.com/gtag/js?id=${GOOGLE_TAG_IDS[0]}` },
         injectTo: 'head',
       },
       {
         tag: 'script',
         injectTo: 'head',
-        children: `window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '${GOOGLE_ADS_ID}');`,
+        children: `window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());${GOOGLE_TAG_IDS.map((id) => `gtag('config', '${id}');`).join('')}`,
       },
     ]
   },
@@ -44,5 +44,5 @@ const googleAds = () => ({
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), gtm(), googleAds()],
+  plugins: [react(), gtm(), googleTags()],
 })
