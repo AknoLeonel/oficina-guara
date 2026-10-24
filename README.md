@@ -17,10 +17,11 @@ Site de um centro automotivo que começou na garagem de casa e hoje atende Toyot
 
 ## Landing pages (anúncios)
 
-As 12 páginas do guia da Agência Empatia (out/2026) ficam em `src/landingPages.js`: H1, title, meta description, alt do banner e mensagem de WhatsApp de cada uma. No `npm run build`, o `scripts/prerender.mjs` gera um HTML por página com o SEO já preenchido, além do `sitemap.xml` e do `robots.txt`.
+As 12 páginas do guia da Agência Empatia (out/2026) ficam em `src/landingPages.js`: H1, title, meta description, alt do banner e mensagem de WhatsApp de cada uma. No `npm run build`, o `scripts/prerender.mjs` gera um HTML por página com o conteúdo (H1, banner e textos) e o SEO já preenchidos, além do `sitemap.xml`, do `robots.txt` e de um `404.html` para URLs inexistentes.
 
 - Banners: `public/banners/banner-<página>-mobile.webp` (1080×1350, até 200 KB) e `-desktop.webp` (1920×700, até 250 KB). Para trocar pela foto da produtora, basta substituir o arquivo com o mesmo nome.
 - Domínio, GTM e WhatsApp: `src/siteConfig.js`.
+- Sitelinks para o Google Ads (um por página): `docs/sitelinks-google-ads.csv`.
 
 ## Tecnologias
 

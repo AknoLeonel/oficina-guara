@@ -1,26 +1,59 @@
-// Roda depois do `vite build`:
-// - cria dist/<slug>/index.html para cada landing page com title, description, canonical,
-//   Open Graph e preload do banner já no HTML (o Google e o WhatsApp leem sem rodar JS);
-// - gera dist/sitemap.xml, dist/robots.txt e dist/spa.html (fallback das outras rotas).
+// Roda depois do `vite build` e do build SSR (dist-ssr/entry-server.js):
+// - cria dist/<slug>/index.html para cada landing page com o conteúdo (H1, banner, textos) já no HTML,
+//   mais title, description, canonical, Open Graph, dados estruturados e preload do banner;
+// - pré-renderiza a home e o dist/404.html (servido pela Vercel com status 404);
+// - gera dist/sitemap.xml, dist/robots.txt e dist/spa.html (fallback de /servicos/*).
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { LANDING_PAGES } from '../src/landingPages.js';
 import { SITE_URL, HOME_META } from '../src/siteConfig.js';
 
 const DIST = 'dist';
 const SERVICE_PATHS = ['mecanica-motor', 'eletrica-tecnologia', 'suspensao-freios', 'conforto-clima'].map((id) => `/servicos/${id}`);
 
+const { render } = await import(pathToFileURL(resolve('dist-ssr/entry-server.js')).href);
+
 const escapeHtml = (text) =>
   text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-const template = readFileSync(join(DIST, 'index.html'), 'utf-8');
+const jsonLd = (data) =>
+  `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`;
 
-const replaceOrFail = (html, pattern, replacement) => {
-  if (!pattern.test(html)) throw new Error(`prerender: padrão não encontrado no index.html: ${pattern}`);
-  return html.replace(pattern, replacement);
+const BUSINESS = {
+  '@context': 'https://schema.org',
+  '@type': 'AutoRepair',
+  name: 'Oficina do Éder',
+  alternateName: 'Oficina Guará',
+  url: `${SITE_URL}/`,
+  image: `${SITE_URL}/logo-oficina-guara.png`,
+  telephone: '+55-61-98207-9250',
+  email: 'oficinadoeder@gmail.com',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Área Especial 2A, Conjunto A, Lote 6',
+    addressLocality: 'Guará II, Brasília',
+    addressRegion: 'DF',
+    postalCode: '71070-625',
+    addressCountry: 'BR',
+  },
+  openingHoursSpecification: [{
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+    opens: '08:00',
+    closes: '18:00',
+  }],
 };
 
-const renderPage = ({ title, description, path, banner }) => {
+const template = readFileSync(join(DIST, 'index.html'), 'utf-8');
+
+const replaceOrFail = (html, search, replacement) => {
+  const found = typeof search === 'string' ? html.includes(search) : search.test(html);
+  if (!found) throw new Error(`prerender: trecho não encontrado no index.html: ${search}`);
+  return html.replace(search, replacement);
+};
+
+const renderPage = ({ title, description, path, banner, breadcrumb, noindex = false, renderPath = path }) => {
   const url = SITE_URL + path;
   let html = template;
   html = replaceOrFail(html, /<title>[^<]*<\/title>/, `<title>${escapeHtml(title)}</title>`);
@@ -28,7 +61,22 @@ const renderPage = ({ title, description, path, banner }) => {
   html = replaceOrFail(html, /<meta property="og:title" content="[^"]*"\s*\/>/, `<meta property="og:title" content="${escapeHtml(title)}" />`);
   html = replaceOrFail(html, /<meta property="og:description" content="[^"]*"\s*\/>/, `<meta property="og:description" content="${escapeHtml(description)}" />`);
 
-  const extra = [`<link rel="canonical" href="${url}" />`, `<meta property="og:url" content="${url}" />`];
+  const extra = [];
+  if (noindex) {
+    extra.push('<meta name="robots" content="noindex" />');
+  } else {
+    extra.push(`<link rel="canonical" href="${url}" />`, `<meta property="og:url" content="${url}" />`, jsonLd(BUSINESS));
+  }
+  if (breadcrumb) {
+    extra.push(jsonLd({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Início', item: `${SITE_URL}/` },
+        { '@type': 'ListItem', position: 2, name: breadcrumb, item: url },
+      ],
+    }));
+  }
   if (banner) {
     html = replaceOrFail(html, /<meta property="og:image" content="[^"]*"\s*\/>/, `<meta property="og:image" content="${SITE_URL}${banner.desktop}" />`);
     extra.push(
@@ -36,7 +84,8 @@ const renderPage = ({ title, description, path, banner }) => {
       `<link rel="preload" as="image" type="image/webp" href="${banner.desktop}" media="(min-width: 768px)" fetchpriority="high" />`,
     );
   }
-  return html.replace('</head>', `  ${extra.join('\n    ')}\n  </head>`);
+  html = html.replace('</head>', `  ${extra.join('\n    ')}\n  </head>`);
+  return replaceOrFail(html, '<div id="root"></div>', `<div id="root">${render(renderPath)}</div>`);
 };
 
 for (const page of LANDING_PAGES) {
@@ -49,13 +98,20 @@ for (const page of LANDING_PAGES) {
       description: page.description,
       path: page.path,
       banner: { mobile: page.bannerMobile, desktop: page.bannerDesktop },
+      breadcrumb: page.name,
     }),
   );
 }
 
-// Fallback da SPA (vercel.json) para as demais rotas: sem canonical, o React define na página.
+// Fallback de /servicos/* (vercel.json): sem canonical nem conteúdo, o React monta a página.
 writeFileSync(join(DIST, 'spa.html'), template);
-// A home também ganha canonical no HTML.
+// Qualquer outra URL: página 404 de verdade (status 404 na Vercel).
+writeFileSync(join(DIST, '404.html'), renderPage({
+  title: 'Página não encontrada | Oficina Guará',
+  description: HOME_META.description,
+  path: '/404',
+  noindex: true,
+}));
 writeFileSync(join(DIST, 'index.html'), renderPage({ ...HOME_META, path: '/' }));
 
 const today = new Date().toISOString().slice(0, 10);
@@ -68,4 +124,4 @@ ${urls.map((path) => `  <url><loc>${SITE_URL}${path}</loc><lastmod>${today}</las
 writeFileSync(join(DIST, 'sitemap.xml'), sitemap);
 writeFileSync(join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
 
-console.log(`prerender: ${LANDING_PAGES.length} landing pages, sitemap com ${urls.length} URLs`);
+console.log(`prerender: ${LANDING_PAGES.length} landing pages + home + 404, sitemap com ${urls.length} URLs`);
