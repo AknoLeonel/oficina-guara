@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo, useRef } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { BrowserRouter, Routes, Route, Link, useParams, useLocation } from 'react-router-dom';
 import { 
   Menu, X, Wrench, Car, Settings, MapPin, Phone, Clock, CheckCircle, ArrowRight,
@@ -6,8 +6,8 @@ import {
   Thermometer, Disc, Zap, Activity, Wind, ShieldCheck, MessageCircle, AlertTriangle,
   Gauge, Volume2, Cpu, PaintBucket
 } from 'lucide-react';
-import { LANDING_PAGES, findLandingPage } from './landingPages';
-import { SITE_URL, HOME_META, whatsappLink, SOCIAL_LINKS, EMAIL, MAPS_LINK } from './siteConfig';
+import { LANDING_PAGES, LANDING_GROUP_TITLES, findLandingPage } from './landingPages';
+import { SITE_URL, HOME_META, whatsappLink, PHONE_DISPLAY, PHONE_LINK, SOCIAL_LINKS, EMAIL, MAPS_LINK } from './siteConfig';
 
 // --- DADOS GLOBAIS ---
 const DATA_CATEGORIES = [
@@ -84,8 +84,10 @@ const Button = ({ children, variant = 'primary', className = '', href, to, ...pr
   if (to) return <Link to={to} className={classes} {...props}>{children}</Link>;
   if (href) {
     const external = href.startsWith('http');
+    // Marcação para o GTM (guia de setembro, pág. 7)
+    const cta = href.startsWith('https://wa.me') ? 'whatsapp' : href.startsWith('tel:') ? 'telefone' : undefined;
     return (
-      <a href={href} className={classes} {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})} {...props}>
+      <a href={href} className={classes} data-cta={cta} {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})} {...props}>
         {children}
       </a>
     );
@@ -135,14 +137,20 @@ const usePageMeta = ({ title, description, path, image, noindex = false }) => {
   }, [title, description, path, image, noindex]);
 };
 
-// BOTÃO FLUTUANTE DO WHATSAPP (abre com a mensagem da landing page atual)
-const WhatsAppButton = () => {
+// Link do WhatsApp com a mensagem da landing page atual (topo, meio e botão flutuante)
+const useWhatsappLink = () => {
   const { pathname } = useLocation();
-  const page = findLandingPage(pathname);
+  return whatsappLink(findLandingPage(pathname)?.whatsapp);
+};
+
+// BOTÃO FLUTUANTE DO WHATSAPP
+const WhatsAppButton = () => {
+  const waLink = useWhatsappLink();
 
   return (
     <a
-      href={whatsappLink(page?.whatsapp)}
+      href={waLink}
+      data-cta="whatsapp"
       target="_blank"
       rel="noopener noreferrer"
       className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 bg-[#25D366] text-white p-3 md:p-4 rounded-full shadow-lg hover:bg-[#20bd5a] transition-all duration-300 hover:scale-110 flex items-center justify-center group animate-bounce-slow"
@@ -164,6 +172,7 @@ const WhatsAppButton = () => {
 };
 
 const DiagnosticPanel = () => {
+  const waLink = useWhatsappLink();
   const [selectedIssue, setSelectedIssue] = useState(null);
 
   const issues = [
@@ -211,7 +220,7 @@ const DiagnosticPanel = () => {
                 {selectedIssue?.message}
               </p>
               {/* BOTÃO DIAGNÓSTICO ATUALIZADO COM O LINK */}
-              <Button href={whatsappLink()} className="w-full sm:w-full text-xs md:text-sm py-2">Agendar Diagnóstico</Button>
+              <Button href={waLink} className="w-full sm:w-full text-xs md:text-sm py-2">Agendar Diagnóstico</Button>
             </div>
           </div>
         </div>
@@ -230,6 +239,7 @@ const DiagnosticPanel = () => {
 
 // --- SERVIÇOS INTERATIVOS ---
 const InteractiveServices = () => {
+  const waLink = useWhatsappLink();
   const [activeCategory, setActiveCategory] = useState(0);
 
   return (
@@ -291,7 +301,7 @@ const InteractiveServices = () => {
           <div className="mt-8 md:mt-10 pt-6 md:pt-8 border-t border-white/10 flex flex-col sm:flex-row gap-4">
             <Button to={`/servicos/${DATA_CATEGORIES[activeCategory].id}`} className="w-full">Ver Detalhes</Button>
             {/* BOTÃO FALAR COM ESPECIALISTA ATUALIZADO */}
-            <Button href={whatsappLink()} variant="glass" className="w-full">Falar com Especialista</Button>
+            <Button href={waLink} variant="glass" className="w-full">Falar com Especialista</Button>
           </div>
         </div>
       </div>
@@ -323,7 +333,7 @@ const InfiniteCarousel = () => {
         <div className="flex w-max animate-scroll gap-4 md:gap-6 px-4 hover:[animation-play-state:paused]">
           {[...images, ...images].map((img, i) => (
             <div key={i} className="w-64 h-40 md:w-96 md:h-64 rounded-xl overflow-hidden border border-white/10 relative group/item shrink-0 bg-zinc-900">
-               <img src={img} alt="Trabalho Realizado" className="w-full h-full object-cover transition-transform duration-700 group-hover/item:scale-110 md:grayscale md:group-hover/item:grayscale-0" />
+               <img src={img} alt="Trabalho Realizado" loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover/item:scale-110 md:grayscale md:group-hover/item:grayscale-0" />
                <div className="absolute inset-0 bg-[#ec7337]/20 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300"></div>
             </div>
           ))}
@@ -337,6 +347,7 @@ const ServicePage = () => {
     const { id } = useParams();
     const { pathname } = useLocation();
     const category = DATA_CATEGORIES.find(cat => cat.id === id);
+    const waLink = useWhatsappLink();
 
     usePageMeta({
         title: category ? `${category.title} no Guará II | Oficina Guará` : HOME_META.title,
@@ -380,7 +391,7 @@ const ServicePage = () => {
                                 {category.fullDescription}
                             </p>
                             {/* BOTÃO ORÇAMENTO ATUALIZADO */}
-                            <Button href={whatsappLink()} className="w-full sm:w-auto"><Phone size={18} className="mr-2" /> Solicitar Orçamento</Button>
+                            <Button href={waLink} className="w-full sm:w-auto"><Phone size={18} className="mr-2" /> Solicitar Orçamento</Button>
                         </div>
                         
                         <div className="bg-black/30 rounded-2xl p-6 border border-white/5">
@@ -407,22 +418,17 @@ const ServicePage = () => {
     );
 };
 
-// --- LANDING PAGES (GUIA DAS 12 NOVAS PÁGINAS) ---
+// --- LANDING PAGES (GUIAS DE SETEMBRO E OUTUBRO) ---
 const LANDING_GROUPS = [
-    { id: 'caminhonete', title: 'Caminhonetes', icon: Truck },
-    { id: 'servico', title: 'Serviços Diesel', icon: Wrench },
+    { id: 'especialidade', title: LANDING_GROUP_TITLES.especialidade, icon: Wrench },
+    { id: 'caminhonete', title: LANDING_GROUP_TITLES.caminhonete, icon: Truck },
+    { id: 'oficina', title: LANDING_GROUP_TITLES.oficina, icon: ShieldCheck },
 ];
 
-// Corpo provisório: será ajustado ao modelo das páginas do guia de setembro.
-const LANDING_STEPS = [
-    { icon: ShieldCheck, title: 'Avaliação gratuita', text: 'Você traz a caminhonete e avaliamos sem compromisso.' },
-    { icon: Cpu, title: 'Diagnóstico com scanner', text: 'Leitura eletrônica e testes para achar a causa real do problema.' },
-    { icon: CheckCircle, title: 'Orçamento transparente', text: 'Você aprova o serviço antes de qualquer peça ser trocada.' },
-];
-
-const LandingPage = ({ page }) => {
+// Clone da página modelo (home): mudam só o banner e o H1 do topo.
+const LandingPage = ({ page, offsetY }) => {
     const { pathname } = useLocation();
-    const waLink = whatsappLink(page.whatsapp);
+    const waLink = useWhatsappLink();
 
     usePageMeta({ title: page.title, description: page.description, path: page.path, image: page.bannerDesktop });
 
@@ -431,7 +437,7 @@ const LandingPage = ({ page }) => {
     }, [pathname]);
 
     return (
-        <div className="min-h-screen bg-zinc-950 pt-20 md:pt-24">
+        <div className="bg-zinc-950 pt-20 md:pt-24">
             {/* BANNER: foto própria da página, H1 em HTML no espaço livre da foto */}
             <section className="relative">
                 <picture>
@@ -461,84 +467,29 @@ const LandingPage = ({ page }) => {
                 </div>
             </section>
 
-            {/* CHAMADA */}
-            <section className="border-b border-white/5">
-                <div className="container mx-auto px-4 md:px-8 py-8 md:py-12 grid lg:grid-cols-[1fr_auto] gap-6 lg:gap-12 items-center">
-                    <p className="text-zinc-300 text-base md:text-xl leading-relaxed border-l-4 border-[#ec7337] pl-4 md:pl-6">
-                        {page.intro}
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-3 md:gap-4 lg:justify-end">
-                        <Button href={waLink} className="w-full h-12 md:h-14 !px-8"><MessageCircle size={20} className="mr-2" /> Avaliação Gratuita</Button>
-                        <Button href="tel:+5561982079250" variant="glass" className="w-full h-12 md:h-14 !px-8"><Phone size={18} className="mr-2" /> (61) 98207-9250</Button>
-                    </div>
-                </div>
-            </section>
-
-            {/* O QUE RESOLVEMOS */}
-            <section className="py-16 md:py-24">
-                <div className="container mx-auto px-4 md:px-8">
-                    <SectionHeader title="O que resolvemos" subtitle={page.name} />
-                    <div className="grid sm:grid-cols-2 gap-4 md:gap-6">
-                        {page.servicos.map((servico) => (
-                            <div key={servico.title} className="p-6 md:p-8 bg-zinc-900/60 rounded-2xl border border-white/5 hover:border-[#ec7337]/40 transition-colors">
-                                <h3 className="text-lg md:text-xl font-header font-bold text-white uppercase mb-2 flex items-center gap-3">
-                                    <span className="w-2 h-2 rounded-full bg-[#ec7337] shrink-0"></span>
-                                    {servico.title}
-                                </h3>
-                                <p className="text-zinc-400 text-sm md:text-base leading-relaxed">{servico.text}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* COMO FUNCIONA */}
-            <section className="py-16 md:py-24 bg-zinc-900">
-                <div className="container mx-auto px-4 md:px-8">
-                    <SectionHeader title="Como funciona" subtitle="Sem surpresa no orçamento" />
-                    <div className="grid md:grid-cols-3 gap-4 md:gap-6">
-                        {LANDING_STEPS.map((step, idx) => (
-                            <div key={step.title} className="p-6 md:p-8 bg-black/30 rounded-2xl border border-white/5">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-10 h-10 rounded-xl bg-[#ec7337]/20 border border-[#ec7337]/30 flex items-center justify-center">
-                                        <step.icon size={20} className="text-[#ec7337]" />
-                                    </div>
-                                    <span className="text-zinc-400 font-header text-sm tracking-widest">PASSO {idx + 1}</span>
-                                </div>
-                                <h3 className="text-lg md:text-xl font-header font-bold text-white uppercase mb-2">{step.title}</h3>
-                                <p className="text-zinc-400 text-sm md:text-base leading-relaxed">{step.text}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* CTA FINAL */}
-            <section className="py-16 md:py-24">
-                <div className="container mx-auto px-4 md:px-8">
-                    <div className="max-w-4xl mx-auto bg-zinc-900 border border-white/10 border-l-4 border-l-[#ec7337] rounded-3xl p-6 md:p-12 grid md:grid-cols-2 gap-8 items-center">
-                        <div>
-                            <h2 className="text-2xl md:text-4xl font-bold font-header text-white uppercase mb-4">
-                                Agende sua <span className="text-[#ec7337]">avaliação gratuita</span>
-                            </h2>
-                            <p className="text-zinc-400 text-sm md:text-base leading-relaxed">
-                                Mais de 15 anos cuidando de caminhonetes, 4x4 e diesel no Guará II, com transparência do diagnóstico à entrega.
-                            </p>
+            {/* RESTO DO TOPO: igual à home */}
+            <section className="py-12 md:py-16 border-b border-white/5">
+                <div className="container mx-auto px-4 md:px-8 grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+                    <div className="space-y-6 md:space-y-8">
+                        <p className="text-zinc-300 text-base md:text-lg lg:text-xl max-w-xl leading-relaxed border-l-4 border-[#ec7337] pl-4 md:pl-6">
+                            Manutenção especializada em Toyota, Nissan, GM, Ford, VW, Mitsubishi e muito mais.
+                            Motor, câmbio, 4x4, diesel e injeção eletrônica.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
+                            <Button href={waLink} className="h-12 md:h-14 !px-8"><MessageCircle size={20} className="mr-2" /> Fazer Avaliação</Button>
+                            <Button href={PHONE_LINK} variant="glass" className="h-12 md:h-14 !px-8"><Phone size={18} className="mr-2" /> {PHONE_DISPLAY}</Button>
                         </div>
-                        <div className="space-y-4">
-                            <div className="flex items-start gap-3 text-zinc-300 text-sm">
-                                <MapPin size={20} className="text-[#ec7337] shrink-0" />
-                                <span>Área Especial 2A, Conjunto A, Lote 6, Guará II · Brasília/DF</span>
-                            </div>
-                            <div className="flex items-start gap-3 text-zinc-300 text-sm">
-                                <Clock size={20} className="text-[#ec7337] shrink-0" />
-                                <span>Seg - Sex: 08h às 18h</span>
-                            </div>
-                            <Button href={waLink} className="w-full sm:w-full"><MessageCircle size={20} className="mr-2" /> Chamar no WhatsApp</Button>
+                        <div className="flex flex-wrap items-center gap-4 md:gap-6 text-zinc-400 font-header text-xs md:text-sm tracking-widest">
+                            <span>TOYOTA</span> • <span>FORD</span> • <span>MITSUBISHI</span> • <span>GM</span>
                         </div>
                     </div>
+                    <div className="flex justify-center items-center">
+                        <DiagnosticPanel />
+                    </div>
                 </div>
             </section>
+
+            <HomeSections offsetY={offsetY} />
         </div>
     );
 };
@@ -557,6 +508,7 @@ const NotFoundPage = () => {
 // --- HOME PAGE ---
 const HomePage = ({ offsetY }) => {
     usePageMeta({ title: HOME_META.title, description: HOME_META.description, path: '/' });
+    const waLink = useWhatsappLink();
 
     return (
         <>
@@ -595,7 +547,7 @@ const HomePage = ({ offsetY }) => {
                     
                     <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-4">
                       {/* BOTÃO HERO ATUALIZADO */}
-                      <Button href={whatsappLink()} className="!text-base md:!text-lg !px-8 md:!px-10 h-12 md:h-14 w-full">Fazer Avaliação <ArrowRight className="inline ml-2" size={20} /></Button>
+                      <Button href={waLink} className="!text-base md:!text-lg !px-8 md:!px-10 h-12 md:h-14 w-full">Fazer Avaliação <ArrowRight className="inline ml-2" size={20} /></Button>
                     </div>
                     
                     <div className="flex flex-wrap items-center gap-4 md:gap-6 pt-4 md:pt-8 text-zinc-400 font-header text-xs md:text-sm tracking-widest">
@@ -609,6 +561,17 @@ const HomePage = ({ offsetY }) => {
                 </div>
             </header>
 
+            <HomeSections offsetY={offsetY} />
+        </>
+    );
+};
+
+// --- SEÇÕES DA PÁGINA MODELO (home e landing pages) ---
+const HomeSections = ({ offsetY }) => {
+    const waLink = useWhatsappLink();
+
+    return (
+        <>
             {/* --- SOBRE NÓS --- */}
             <section id="sobre" className="py-16 md:py-24 relative bg-zinc-900">
                 <div className="container mx-auto px-4 md:px-8 grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
@@ -679,18 +642,18 @@ const HomePage = ({ offsetY }) => {
                     {LANDING_GROUPS.map((group) => (
                       <div key={group.id}>
                         <h3 className="text-zinc-400 font-bold uppercase text-xs tracking-widest mb-4">{group.title}</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
                           {LANDING_PAGES.filter((page) => page.group === group.id).map((page) => (
                             <Link
                               key={page.slug}
                               to={page.path}
-                              className="flex items-center justify-between gap-3 p-4 md:p-5 bg-black/30 rounded-xl border border-white/5 hover:border-[#ec7337]/60 hover:bg-[#ec7337]/10 transition-colors group"
+                              className="flex items-center justify-between gap-2 md:gap-3 min-h-14 p-3 md:p-5 bg-black/30 rounded-xl border border-white/5 hover:border-[#ec7337]/60 hover:bg-[#ec7337]/10 transition-colors group"
                             >
                               <span className="flex items-center gap-3">
-                                <group.icon size={18} className="text-[#ec7337] shrink-0" />
-                                <span className="text-white font-header font-bold uppercase text-sm md:text-base">{page.name}</span>
+                                <group.icon size={18} className="text-[#ec7337] shrink-0 hidden sm:block" />
+                                <span className="text-white font-header font-bold uppercase text-sm md:text-base leading-tight">{page.name}</span>
                               </span>
-                              <ArrowRight size={16} className="text-zinc-400 group-hover:text-[#ec7337] transition-colors shrink-0" />
+                              <ArrowRight size={16} className="text-zinc-400 group-hover:text-[#ec7337] transition-colors shrink-0 hidden sm:block" />
                             </Link>
                           ))}
                         </div>
@@ -709,6 +672,7 @@ const HomePage = ({ offsetY }) => {
                   <img 
                     src="https://images.unsplash.com/photo-1487754180451-c456f719a1fc?q=80&w=2000&auto=format&fit=crop" 
                     alt="Oficina Background" 
+                    loading="lazy"
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-[#ec7337]/90 mix-blend-multiply"></div>
@@ -724,7 +688,7 @@ const HomePage = ({ offsetY }) => {
                       </p>
                       <div className="flex flex-col md:flex-row justify-center gap-4">
                         {/* BOTÃO AGENDAR AGORA ATUALIZADO */}
-                         <Button href={whatsappLink()} variant="primary" className="!bg-white !text-zinc-950 hover:!bg-zinc-100 border-none shadow-xl font-bold w-full"><Phone size={20} className="mr-2" /> Agendar Agora</Button>
+                         <Button href={waLink} variant="primary" className="!bg-white !text-zinc-950 hover:!bg-zinc-100 border-none shadow-xl font-bold w-full"><Phone size={20} className="mr-2" /> Agendar Agora</Button>
                          <Button href={MAPS_LINK} variant="glass" className="font-bold">
                             <MapPin size={20} className="mr-2" /> Como Chegar
                          </Button>
@@ -734,17 +698,18 @@ const HomePage = ({ offsetY }) => {
             </section>
         </>
     );
-}
+};
 
 // --- NAVBAR PRINCIPAL ---
-const Navbar = ({ isScrolled, setIsMenuOpen, isMenuOpen }) => {
-    const [openDropdown, setOpenDropdown] = useState(null);
+const Navbar = ({ isScrolled }) => {
     const location = useLocation();
-
-    useEffect(() => {
-        setIsMenuOpen(false);
-        setOpenDropdown(null);
-    }, [location, setIsMenuOpen]);
+    // Menus abertos valem só para a rota em que foram abertos: trocar de página fecha tudo.
+    const [menu, setMenu] = useState({ key: null, mobile: false, dropdown: null });
+    const current = menu.key === location.key ? menu : { mobile: false, dropdown: null };
+    const isMenuOpen = current.mobile;
+    const openDropdown = current.dropdown;
+    const setIsMenuOpen = (open) => setMenu({ key: location.key, mobile: open, dropdown: null });
+    const setOpenDropdown = (name) => setMenu({ key: location.key, mobile: false, dropdown: name });
 
     const toggleDropdown = (name) => setOpenDropdown(openDropdown === name ? null : name);
 
@@ -827,8 +792,8 @@ const Navbar = ({ isScrolled, setIsMenuOpen, isMenuOpen }) => {
                     Especialidades <ChevronDown size={14} className={`transition-transform duration-300 ${openDropdown === 'especialidades' ? 'rotate-180' : ''}`} />
                 </button>
                 
-                <div className={`absolute top-full right-0 mt-2 w-[540px] bg-zinc-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden transition-all duration-300 origin-top ${openDropdown === 'especialidades' ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
-                    <div className="p-4 grid grid-cols-2 gap-4">
+                <div className={`absolute top-full right-0 mt-2 w-[780px] bg-zinc-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden transition-all duration-300 origin-top ${openDropdown === 'especialidades' ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                    <div className="p-4 grid grid-cols-3 gap-4">
                         {LANDING_GROUPS.map((group) => (
                             <div key={group.id}>
                                 <p className="px-4 pb-2 text-[10px] text-zinc-400 font-bold uppercase tracking-widest">{group.title}</p>
@@ -860,7 +825,7 @@ const Navbar = ({ isScrolled, setIsMenuOpen, isMenuOpen }) => {
 
           {/* BOTÃO LIGAR NAVBAR ATUALIZADO */}
           <div className="hidden xl:flex">
-            <Button href="tel:+5561982079250" variant="primary" className="!py-2 !px-6 text-sm" aria-label="Ligar para oficina"><Phone size={16} className="mr-2" /> (61) 98207-9250</Button>
+            <Button href={PHONE_LINK} variant="primary" className="!py-2 !px-6 text-sm" aria-label="Ligar para oficina"><Phone size={16} className="mr-2" /> {PHONE_DISPLAY}</Button>
           </div>
 
           <button 
@@ -893,14 +858,18 @@ const Navbar = ({ isScrolled, setIsMenuOpen, isMenuOpen }) => {
                </li>
 
                <li className="w-full">
-                   <p className="text-center text-zinc-400 uppercase tracking-widest text-xs mb-4 mt-2">Especialidades</p>
-                   <div className="grid grid-cols-2 gap-2">
-                      {LANDING_GROUPS.flatMap((group) => LANDING_PAGES.filter((page) => page.group === group.id)).map(page => (
-                          <Link key={page.slug} to={page.path} className="flex items-center justify-center min-h-12 px-2 py-2 text-sm font-header uppercase font-bold text-center text-zinc-300 border border-white/5 rounded-xl hover:border-[#ec7337] hover:bg-[#ec7337]/10">
-                             {page.name}
-                          </Link>
-                      ))}
-                   </div>
+                   {LANDING_GROUPS.map((group) => (
+                       <div key={group.id}>
+                           <p className="text-center text-zinc-400 uppercase tracking-widest text-xs mb-4 mt-6">{group.title}</p>
+                           <div className="grid grid-cols-2 gap-2">
+                              {LANDING_PAGES.filter((page) => page.group === group.id).map(page => (
+                                  <Link key={page.slug} to={page.path} className="flex items-center justify-center min-h-12 px-2 py-2 text-sm font-header uppercase font-bold text-center text-zinc-300 border border-white/5 rounded-xl hover:border-[#ec7337] hover:bg-[#ec7337]/10">
+                                     {page.name}
+                                  </Link>
+                              ))}
+                           </div>
+                       </div>
+                   ))}
                </li>
 
                <li className="w-full mt-2">
@@ -908,7 +877,7 @@ const Navbar = ({ isScrolled, setIsMenuOpen, isMenuOpen }) => {
                </li>
                 {/* BOTÃO LIGAR MENU MOBILE ATUALIZADO */}
                <li className="w-full mt-8">
-                 <Button href="tel:+5561982079250" onClick={() => setIsMenuOpen(false)} className="w-full sm:w-full">Ligar Agora</Button>
+                 <Button href={PHONE_LINK} onClick={() => setIsMenuOpen(false)} className="w-full sm:w-full">Ligar Agora</Button>
                </li>
             </ul>
           </div>
@@ -917,11 +886,48 @@ const Navbar = ({ isScrolled, setIsMenuOpen, isMenuOpen }) => {
     );
 };
 
+// --- MAPA DO SITE DO RODAPÉ: links HTML para todas as landing pages ---
+// No celular cada grupo é um bloco recolhível; os links ficam no HTML mesmo fechados.
+const FooterSiteMap = () => {
+    const [openGroup, setOpenGroup] = useState(null);
+
+    return (
+        <nav aria-label="Mapa do site" className="container mx-auto px-4 md:px-8 mb-12 md:mb-16 grid md:grid-cols-3 md:gap-12">
+            {LANDING_GROUPS.map((group) => {
+                const isOpen = openGroup === group.id;
+                return (
+                    <div key={group.id} className="border-b border-white/5 md:border-0">
+                        <h2 className="text-white font-bold uppercase font-header tracking-wider md:mb-6">
+                            <button
+                                type="button"
+                                onClick={() => setOpenGroup(isOpen ? null : group.id)}
+                                aria-expanded={isOpen}
+                                aria-controls={`mapa-${group.id}`}
+                                className="md:hidden w-full min-h-12 flex items-center justify-between gap-3 text-left uppercase"
+                            >
+                                {group.title}
+                                <ChevronDown size={18} className={`text-[#ec7337] transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                            </button>
+                            <span className="hidden md:block border-l-2 border-[#ec7337] pl-3">{group.title}</span>
+                        </h2>
+                        <ul id={`mapa-${group.id}`} className={`${isOpen ? 'grid' : 'hidden'} md:grid grid-cols-1 gap-y-1 pb-4 md:pb-0 text-zinc-400 text-sm`}>
+                            {LANDING_PAGES.filter((page) => page.group === group.id).map((page) => (
+                                <li key={page.slug}>
+                                    <Link to={page.path} className="hover:text-[#ec7337] transition-colors flex items-center py-3"><span className="w-1 h-1 bg-[#ec7337] rounded-full mr-2 shrink-0"></span>{page.name}</Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                );
+            })}
+        </nav>
+    );
+};
+
 // --- APP PRINCIPAL ---
 // AppShell recebe o roteador de fora: BrowserRouter no navegador, StaticRouter no build (entry-server.jsx).
 export function AppShell() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [offsetY, setOffsetY] = useState(0);
 
   useEffect(() => {
@@ -979,13 +985,13 @@ export function AppShell() {
         <div className="bg-noise"></div>
         <WhatsAppButton />
 
-        <Navbar isScrolled={isScrolled} setIsMenuOpen={setIsMenuOpen} isMenuOpen={isMenuOpen} />
+        <Navbar isScrolled={isScrolled} />
 
         <Routes>
             <Route path="/" element={<HomePage offsetY={offsetY} />} />
             <Route path="/servicos/:id" element={<ServicePage />} />
             {LANDING_PAGES.map((page) => (
-                <Route key={page.slug} path={page.path} element={<LandingPage page={page} />} />
+                <Route key={page.slug} path={page.path} element={<LandingPage page={page} offsetY={offsetY} />} />
             ))}
             <Route path="*" element={<NotFoundPage />} />
         </Routes>
@@ -1051,7 +1057,7 @@ export function AppShell() {
                     <Phone size={24} className="text-[#ec7337] shrink-0 mt-1" />
                     <div>
                         <h3 className="text-white font-bold text-sm uppercase mb-1">Telefone</h3>
-                        <a href="tel:+5561982079250" className="block py-2 text-zinc-300 text-lg font-bold hover:text-[#ec7337] transition-colors">(61) 98207-9250</a>
+                        <a href={PHONE_LINK} className="block py-2 text-zinc-300 text-lg font-bold hover:text-[#ec7337] transition-colors" data-cta="telefone">{PHONE_DISPLAY}</a>
                         <p className="text-zinc-400 text-xs mt-1">Seg - Sex: 08h às 18h</p>
                     </div>
                 </div>
@@ -1067,24 +1073,8 @@ export function AppShell() {
             </div>
             </div>
 
-            {/* MAPA DO SITE */}
-            <div className="container mx-auto px-4 md:px-8 mb-12 md:mb-16 grid md:grid-cols-3 gap-8 md:gap-12">
-                {[
-                    { title: 'Caminhonetes', group: 'caminhonete', span: 'md:col-span-2', cols: 'sm:grid-cols-2' },
-                    { title: 'Serviços Diesel', group: 'servico', span: '', cols: '' },
-                ].map((col) => (
-                    <div key={col.group} className={col.span}>
-                        <h2 className="text-white font-bold uppercase mb-6 font-header tracking-wider border-l-2 border-[#ec7337] pl-3">{col.title}</h2>
-                        <ul className={`grid grid-cols-1 ${col.cols} gap-x-8 gap-y-1 text-zinc-400 text-sm`}>
-                            {LANDING_PAGES.filter((page) => page.group === col.group).map((page) => (
-                                <li key={page.slug}>
-                                    <Link to={page.path} className="hover:text-[#ec7337] transition-colors flex items-center py-3"><span className="w-1 h-1 bg-[#ec7337] rounded-full mr-2 shrink-0"></span>{page.name}</Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                ))}
-            </div>
+            {/* MAPA DO SITE (guia de setembro, pág. 5) */}
+            <FooterSiteMap />
 
             <div className="container mx-auto px-4 md:px-8 pt-8 border-t border-white/5 text-center flex flex-col items-center text-zinc-400 text-xs">
             <p className="mb-2">Copyright © 2026 Oficina Guará. Todos os Direitos Reservados.</p>
