@@ -7,6 +7,9 @@ export const SITE_URL = 'https://www.oficinaguara.com.br';
 // ID do Google Tag Manager (ex.: 'GTM-ABC1234'). Vazio = GTM não é carregado.
 export const GTM_ID = 'GTM-PCNWNRT';
 
+// Tag do Google Ads (gtag.js). Vazio = tag não é carregada.
+export const GOOGLE_ADS_ID = 'AW-18535552477';
+
 // Telefone e WhatsApp oficiais (55 + DDD + número). A agência ainda vai confirmar o número.
 export const WHATSAPP_NUMBER = '5561982079250';
 export const PHONE_DISPLAY = '(61) 98207-9250';

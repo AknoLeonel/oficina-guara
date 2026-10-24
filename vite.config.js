@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { GTM_ID } from './src/siteConfig.js'
+import { GTM_ID, GOOGLE_ADS_ID } from './src/siteConfig.js'
 
 // Google Tag Manager em todas as páginas (o ID fica em src/siteConfig.js)
 const gtm = () => ({
@@ -22,7 +22,27 @@ const gtm = () => ({
   },
 })
 
+// Tag do Google Ads (gtag.js) em todas as páginas (o ID fica em src/siteConfig.js)
+const googleAds = () => ({
+  name: 'google-ads',
+  transformIndexHtml() {
+    if (!GOOGLE_ADS_ID) return []
+    return [
+      {
+        tag: 'script',
+        attrs: { async: true, src: `https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}` },
+        injectTo: 'head',
+      },
+      {
+        tag: 'script',
+        injectTo: 'head',
+        children: `window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '${GOOGLE_ADS_ID}');`,
+      },
+    ]
+  },
+})
+
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), gtm()],
+  plugins: [react(), gtm(), googleAds()],
 })
