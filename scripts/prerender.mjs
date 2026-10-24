@@ -12,6 +12,12 @@ import { SITE_URL, HOME_META, WHATSAPP_NUMBER, EMAIL } from '../src/siteConfig.j
 const DIST = 'dist';
 const SERVICE_PATHS = ['mecanica-motor', 'eletrica-tecnologia', 'suspensao-freios', 'conforto-clima'].map((id) => `/servicos/${id}`);
 
+// Endereços antigos das landing pages precisam de redirecionamento 301 no vercel.json.
+const vercel = JSON.parse(readFileSync('vercel.json', 'utf-8'));
+const semRedirect = LANDING_PAGES.filter((page) => page.oldSlug &&
+  !vercel.redirects?.some((r) => r.source === `/${page.oldSlug}` && r.destination === page.path && r.permanent));
+if (semRedirect.length) throw new Error(`prerender: sem redirect 301 no vercel.json: ${semRedirect.map((page) => page.oldSlug).join(', ')}`);
+
 const { render } = await import(pathToFileURL(resolve('dist-ssr/entry-server.js')).href);
 
 const escapeHtml = (text) =>
