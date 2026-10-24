@@ -2,7 +2,7 @@
 // Usado pelo app (React) e pelo build (vite.config.js e scripts/prerender.mjs).
 
 // Domínio final do site: usado no canonical, no og:url e no sitemap.xml.
-export const SITE_URL = 'https://oficinadoeder.com.br';
+export const SITE_URL = 'https://www.oficinaguara.com.br';
 
 // ID do Google Tag Manager (ex.: 'GTM-ABC1234'). Vazio = GTM não é carregado.
 export const GTM_ID = 'GTM-PCNWNRT';
