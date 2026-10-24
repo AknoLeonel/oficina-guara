@@ -1,3 +1,95 @@
 {
-  "rewrites": [{ "source": "/servicos/:id", "destination": "/spa.html" }]
+  "redirects": [
+    {
+      "source": "/especializada-cambio-toro",
+      "destination": "/cambio-toro",
+      "permanent": true
+    },
+    {
+      "source": "/especializada-4x4",
+      "destination": "/tracao-4x4",
+      "permanent": true
+    },
+    {
+      "source": "/especializada-motor-diesel",
+      "destination": "/motor-diesel",
+      "permanent": true
+    },
+    {
+      "source": "/limpeza-filtro-dpf",
+      "destination": "/limpeza-de-filtro-dpf",
+      "permanent": true
+    },
+    {
+      "source": "/cambio-automatico-caminhonete",
+      "destination": "/cambio-automatico",
+      "permanent": true
+    },
+    {
+      "source": "/oficina-especializada-ram",
+      "destination": "/ram",
+      "permanent": true
+    },
+    {
+      "source": "/oficina-de-camionete",
+      "destination": "/oficina-de-caminhonete",
+      "permanent": true
+    },
+    {
+      "source": "/centro-amarok",
+      "destination": "/amarok",
+      "permanent": true
+    },
+    {
+      "source": "/especializada-jeep-renegade",
+      "destination": "/jeep-renegade",
+      "permanent": true
+    },
+    {
+      "source": "/especializada-hilux",
+      "destination": "/toyota-hilux",
+      "permanent": true
+    },
+    {
+      "source": "/especializada-ranger",
+      "destination": "/ford-ranger",
+      "permanent": true
+    },
+    {
+      "source": "/especializada-s10",
+      "destination": "/s10-e-trailblazer",
+      "permanent": true
+    },
+    {
+      "source": "/especializada-toro-diesel",
+      "destination": "/fiat-toro-diesel",
+      "permanent": true
+    },
+    {
+      "source": "/especializada-sw4",
+      "destination": "/toyota-sw4",
+      "permanent": true
+    },
+    {
+      "source": "/especializada-jeep-compass",
+      "destination": "/jeep-compass-diesel",
+      "permanent": true
+    },
+    {
+      "source": "/especializada-l200-triton",
+      "destination": "/l200-triton",
+      "permanent": true
+    },
+    {
+      "source": "/especializada-frontier",
+      "destination": "/nissan-frontier",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/servicos/:id",
+      "destination": "/spa.html"
+    }
+  ]
 }
