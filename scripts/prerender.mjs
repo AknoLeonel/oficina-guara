@@ -7,7 +7,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { LANDING_PAGES } from '../src/landingPages.js';
-import { SITE_URL, HOME_META } from '../src/siteConfig.js';
+import { SITE_URL, HOME_META, WHATSAPP_NUMBER, EMAIL } from '../src/siteConfig.js';
 
 const DIST = 'dist';
 const SERVICE_PATHS = ['mecanica-motor', 'eletrica-tecnologia', 'suspensao-freios', 'conforto-clima'].map((id) => `/servicos/${id}`);
@@ -27,8 +27,8 @@ const BUSINESS = {
   alternateName: 'Oficina Guará',
   url: `${SITE_URL}/`,
   image: `${SITE_URL}/logo-oficina-guara.png`,
-  telephone: '+55-61-98207-9250',
-  email: 'oficinadoeder@gmail.com',
+  telephone: `+${WHATSAPP_NUMBER}`,
+  email: EMAIL,
   address: {
     '@type': 'PostalAddress',
     streetAddress: 'Área Especial 2A, Conjunto A, Lote 6',
