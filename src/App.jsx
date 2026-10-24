@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo, useRef } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { BrowserRouter, Routes, Route, Link, useParams, useLocation } from 'react-router-dom';
 import { 
   Menu, X, Wrench, Car, Settings, MapPin, Phone, Clock, CheckCircle, ArrowRight,
@@ -701,14 +701,15 @@ const HomeSections = ({ offsetY }) => {
 };
 
 // --- NAVBAR PRINCIPAL ---
-const Navbar = ({ isScrolled, setIsMenuOpen, isMenuOpen }) => {
-    const [openDropdown, setOpenDropdown] = useState(null);
+const Navbar = ({ isScrolled }) => {
     const location = useLocation();
-
-    useEffect(() => {
-        setIsMenuOpen(false);
-        setOpenDropdown(null);
-    }, [location, setIsMenuOpen]);
+    // Menus abertos valem só para a rota em que foram abertos: trocar de página fecha tudo.
+    const [menu, setMenu] = useState({ key: null, mobile: false, dropdown: null });
+    const current = menu.key === location.key ? menu : { mobile: false, dropdown: null };
+    const isMenuOpen = current.mobile;
+    const openDropdown = current.dropdown;
+    const setIsMenuOpen = (open) => setMenu({ key: location.key, mobile: open, dropdown: null });
+    const setOpenDropdown = (name) => setMenu({ key: location.key, mobile: false, dropdown: name });
 
     const toggleDropdown = (name) => setOpenDropdown(openDropdown === name ? null : name);
 
@@ -902,11 +903,12 @@ const FooterSiteMap = () => {
                                 onClick={() => setOpenGroup(isOpen ? null : group.id)}
                                 aria-expanded={isOpen}
                                 aria-controls={`mapa-${group.id}`}
-                                className="w-full min-h-12 flex items-center justify-between gap-3 md:min-h-0 md:pointer-events-none md:border-l-2 md:border-[#ec7337] md:pl-3 text-left uppercase"
+                                className="md:hidden w-full min-h-12 flex items-center justify-between gap-3 text-left uppercase"
                             >
                                 {group.title}
-                                <ChevronDown size={18} className={`md:hidden text-[#ec7337] transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                                <ChevronDown size={18} className={`text-[#ec7337] transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
                             </button>
+                            <span className="hidden md:block border-l-2 border-[#ec7337] pl-3">{group.title}</span>
                         </h2>
                         <ul id={`mapa-${group.id}`} className={`${isOpen ? 'grid' : 'hidden'} md:grid grid-cols-1 gap-y-1 pb-4 md:pb-0 text-zinc-400 text-sm`}>
                             {LANDING_PAGES.filter((page) => page.group === group.id).map((page) => (
@@ -926,7 +928,6 @@ const FooterSiteMap = () => {
 // AppShell recebe o roteador de fora: BrowserRouter no navegador, StaticRouter no build (entry-server.jsx).
 export function AppShell() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [offsetY, setOffsetY] = useState(0);
 
   useEffect(() => {
@@ -984,7 +985,7 @@ export function AppShell() {
         <div className="bg-noise"></div>
         <WhatsAppButton />
 
-        <Navbar isScrolled={isScrolled} setIsMenuOpen={setIsMenuOpen} isMenuOpen={isMenuOpen} />
+        <Navbar isScrolled={isScrolled} />
 
         <Routes>
             <Route path="/" element={<HomePage offsetY={offsetY} />} />
