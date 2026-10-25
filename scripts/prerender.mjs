@@ -7,7 +7,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { LANDING_PAGES } from '../src/landingPages.js';
-import { SITE_URL, HOME_META, WHATSAPP_NUMBER, EMAIL } from '../src/siteConfig.js';
+import { SITE_URL, HOME_META, WHATSAPP_NUMBER, EMAIL, HOURS, STATIC_PAGES } from '../src/siteConfig.js';
 
 const DIST = 'dist';
 const SERVICE_PATHS = ['mecanica-motor', 'eletrica-tecnologia', 'suspensao-freios', 'conforto-clima'].map((id) => `/servicos/${id}`);
@@ -45,9 +45,9 @@ const BUSINESS = {
   },
   openingHoursSpecification: [{
     '@type': 'OpeningHoursSpecification',
-    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-    opens: '08:00',
-    closes: '18:00',
+    dayOfWeek: HOURS.days,
+    opens: HOURS.opens,
+    closes: HOURS.closes,
   }],
 };
 
@@ -109,6 +109,12 @@ for (const page of LANDING_PAGES) {
   );
 }
 
+// Páginas institucionais (/sobre e /contato)
+for (const page of STATIC_PAGES) {
+  mkdirSync(join(DIST, page.path), { recursive: true });
+  writeFileSync(join(DIST, page.path, 'index.html'), renderPage(page));
+}
+
 // Fallback de /servicos/* (vercel.json): sem canonical nem conteúdo, o React monta a página.
 writeFileSync(join(DIST, 'spa.html'), template);
 // Qualquer outra URL: página 404 de verdade (status 404 na Vercel).
@@ -121,7 +127,7 @@ writeFileSync(join(DIST, '404.html'), renderPage({
 writeFileSync(join(DIST, 'index.html'), renderPage({ ...HOME_META, path: '/' }));
 
 const today = new Date().toISOString().slice(0, 10);
-const urls = ['/', ...LANDING_PAGES.map((page) => page.path), ...SERVICE_PATHS];
+const urls = ['/', ...LANDING_PAGES.map((page) => page.path), ...STATIC_PAGES.map((page) => page.path), ...SERVICE_PATHS];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.map((path) => `  <url><loc>${SITE_URL}${path}</loc><lastmod>${today}</lastmod></url>`).join('\n')}
