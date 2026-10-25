@@ -15,7 +15,7 @@ export const GOOGLE_TAG_IDS = [GOOGLE_ADS_ID, GOOGLE_ANALYTICS_ID].filter(Boolea
 // Rótulos das conversões do Google Ads (parte depois da barra no send_to: 'AW-.../RÓTULO').
 // Vazio = o clique não é enviado como conversão.
 export const CONVERSION_LABELS = {
-  whatsapp: 'TESTE123',
+  whatsapp: '',
   telefone: '',
 };
 
