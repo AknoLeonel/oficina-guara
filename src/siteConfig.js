@@ -12,6 +12,13 @@ export const GOOGLE_ADS_ID = 'AW-18535552477';
 export const GOOGLE_ANALYTICS_ID = 'G-GTRQ7E2Y9G';
 export const GOOGLE_TAG_IDS = [GOOGLE_ADS_ID, GOOGLE_ANALYTICS_ID].filter(Boolean);
 
+// Rótulos das conversões do Google Ads (parte depois da barra no send_to: 'AW-.../RÓTULO').
+// Vazio = o clique não é enviado como conversão.
+export const CONVERSION_LABELS = {
+  whatsapp: 'TESTE123',
+  telefone: '',
+};
+
 // Telefone e WhatsApp oficiais (55 + DDD + número). A agência ainda vai confirmar o número.
 export const WHATSAPP_NUMBER = '5561982079250';
 export const PHONE_DISPLAY = '(61) 98207-9250';
