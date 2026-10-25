@@ -7,6 +7,6 @@ export const trackConversions = () => {
     const cta = event.target.closest?.('[data-cta]')?.dataset.cta;
     const label = CONVERSION_LABELS[cta];
     if (!label || !GOOGLE_ADS_ID || typeof window.gtag !== 'function') return;
-    window.gtag('event', 'conversion', { send_to: `${GOOGLE_ADS_ID}/${label}` });
+    window.gtag('event', 'conversion', { send_to: `${GOOGLE_ADS_ID}/${label}`, value: 1.0, currency: 'BRL' });
   });
 };
