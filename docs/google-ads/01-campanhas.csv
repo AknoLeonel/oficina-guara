@@ -1,0 +1,6 @@
+﻿Campaign,Campaign Type,Networks,Budget,Budget type,Bid Strategy Type,Languages,Campaign Status
+C01 | Pesquisa | Diesel & Motor,Search,Google search,49.00,Daily,Maximize clicks,pt,Paused
+C02 | Pesquisa | Câmbio & Tração,Search,Google search,28.00,Daily,Maximize clicks,pt,Paused
+C03 | Pesquisa | Modelos de Caminhonete,Search,Google search,41.00,Daily,Maximize clicks,pt,Paused
+C04 | Pesquisa | Caminhonete & 4x4,Search,Google search,14.00,Daily,Maximize clicks,pt,Paused
+C05 | Pesquisa | Institucional & Marca,Search,Google search,7.00,Daily,Maximize clicks,pt,Paused

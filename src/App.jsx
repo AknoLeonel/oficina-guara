@@ -7,7 +7,7 @@ import {
   Gauge, Volume2, Cpu, PaintBucket
 } from 'lucide-react';
 import { LANDING_PAGES, LANDING_GROUP_TITLES, findLandingPage } from './landingPages';
-import { SITE_URL, HOME_META, whatsappLink, PHONE_DISPLAY, PHONE_LINK, SOCIAL_LINKS, EMAIL, MAPS_LINK } from './siteConfig';
+import { SITE_URL, HOME_META, whatsappLink, PHONE_DISPLAY, PHONE_LINK, SOCIAL_LINKS, EMAIL, MAPS_LINK, HOURS, STATIC_PAGES } from './siteConfig';
 
 // --- DADOS GLOBAIS ---
 const DATA_CATEGORIES = [
@@ -494,6 +494,85 @@ const LandingPage = ({ page, offsetY }) => {
     );
 };
 
+// --- PÁGINAS INSTITUCIONAIS (sitelinks "Sobre a Oficina" e "Fale Conosco") ---
+const pageMeta = (path) => STATIC_PAGES.find((page) => page.path === path);
+
+const PageHeader = ({ eyebrow, title, children }) => (
+    <header className="pt-28 md:pt-36 pb-10 md:pb-14 bg-zinc-950 border-b border-white/5">
+        <div className="container mx-auto px-4 md:px-8">
+            <p className="text-[#ec7337] font-bold tracking-[0.2em] uppercase text-xs md:text-sm mb-3">{eyebrow}</p>
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold font-header text-white uppercase mb-4">{title}</h1>
+            {children}
+        </div>
+    </header>
+);
+
+const SobrePage = ({ offsetY }) => {
+    usePageMeta(pageMeta('/sobre'));
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
+    return (
+        <>
+            <PageHeader eyebrow="Oficina do Éder · Guará II" title="Sobre a Oficina Guará">
+                <p className="text-zinc-300 text-base md:text-xl max-w-2xl leading-relaxed">
+                    Especialistas em caminhonetes diesel e 4x4, com diagnóstico preciso e transparência do orçamento à entrega.
+                </p>
+            </PageHeader>
+            <HomeSections offsetY={offsetY} />
+        </>
+    );
+};
+
+const ContatoPage = () => {
+    const waLink = useWhatsappLink();
+    usePageMeta(pageMeta('/contato'));
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
+    const infos = [
+        { icon: MapPin, title: 'Endereço', text: 'Área Especial 2A, Conjunto A, Lote 6, Guará II · CEP 71070-625 · Brasília/DF', href: MAPS_LINK, external: true },
+        { icon: Phone, title: 'Telefone e WhatsApp', text: PHONE_DISPLAY, href: PHONE_LINK, cta: 'telefone' },
+        { icon: Clock, title: 'Horário', text: HOURS.display },
+        { icon: Mail, title: 'E-mail', text: EMAIL, href: `mailto:${EMAIL}` },
+    ];
+
+    return (
+        <>
+            <PageHeader eyebrow="Atendimento no Guará II" title="Fale com a Oficina Guará">
+                <p className="text-zinc-300 text-base md:text-xl max-w-2xl leading-relaxed mb-8">
+                    Chame no WhatsApp ou ligue para agendar sua avaliação.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
+                    <Button href={waLink} className="h-12 md:h-14 !px-8"><MessageCircle size={20} className="mr-2" /> Chamar no WhatsApp</Button>
+                    <Button href={PHONE_LINK} variant="glass" className="h-12 md:h-14 !px-8"><Phone size={18} className="mr-2" /> {PHONE_DISPLAY}</Button>
+                </div>
+            </PageHeader>
+            <section className="py-12 md:py-20">
+                <div className="container mx-auto px-4 md:px-8 grid sm:grid-cols-2 gap-4 md:gap-6">
+                    {infos.map((info) => (
+                        <div key={info.title} className="p-5 md:p-6 flex items-start gap-4 bg-zinc-900/60 rounded-2xl border border-white/5">
+                            <info.icon size={24} className="text-[#ec7337] shrink-0 mt-1" />
+                            <div>
+                                <h2 className="text-white font-bold text-sm uppercase mb-1">{info.title}</h2>
+                                {info.href ? (
+                                    <a href={info.href} data-cta={info.cta} {...(info.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})} className="block py-1 text-zinc-300 hover:text-[#ec7337] transition-colors break-words">{info.text}</a>
+                                ) : (
+                                    <p className="py-1 text-zinc-300">{info.text}</p>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+        </>
+    );
+};
+
 const NotFoundPage = () => {
     usePageMeta({ title: 'Página não encontrada | Oficina Guará', description: HOME_META.description, path: '/', noindex: true });
 
@@ -752,12 +831,12 @@ const Navbar = ({ isScrolled }) => {
                 Início
             </Link>
 
-            <a 
-                href="/#sobre"
+            <Link 
+                to="/sobre"
                 className="px-3 xl:px-6 py-2 text-sm uppercase tracking-wide xl:tracking-widest font-bold text-zinc-300 hover:text-zinc-950 hover:bg-[#ec7337] rounded-full transition-colors duration-300"
             >
                 Sobre
-            </a>
+            </Link>
             
             <div className="relative group" onMouseEnter={() => setOpenDropdown('servicos')} onMouseLeave={() => setOpenDropdown(null)}>
                 <button 
@@ -815,12 +894,12 @@ const Navbar = ({ isScrolled }) => {
                 </div>
             </div>
 
-            <a 
-                href="/#contato"
+            <Link 
+                to="/contato"
                 className="px-3 xl:px-6 py-2 text-sm uppercase tracking-wide xl:tracking-widest font-bold text-zinc-300 hover:text-zinc-950 hover:bg-[#ec7337] rounded-full transition-colors duration-300"
             >
                 Contato
-            </a>
+            </Link>
           </div>
 
           {/* BOTÃO LIGAR NAVBAR ATUALIZADO */}
@@ -843,7 +922,7 @@ const Navbar = ({ isScrolled }) => {
                   <Link to="/" className="block w-full py-3 text-2xl font-header uppercase font-bold text-center text-white border-b border-white/10 hover:text-[#ec7337]">Início</Link>
                </li>
                <li className="w-full">
-                   <a href="/#sobre" onClick={() => setIsMenuOpen(false)} className="block w-full py-3 text-2xl font-header uppercase font-bold text-center text-white border-b border-white/10 hover:text-[#ec7337]">Sobre</a>
+                   <Link to="/sobre" className="block w-full py-3 text-2xl font-header uppercase font-bold text-center text-white border-b border-white/10 hover:text-[#ec7337]">Sobre</Link>
                </li>
                
                <li className="w-full">
@@ -873,7 +952,7 @@ const Navbar = ({ isScrolled }) => {
                </li>
 
                <li className="w-full mt-2">
-                  <a href="/#contato" onClick={() => setIsMenuOpen(false)} className="block w-full py-3 text-2xl font-header uppercase font-bold text-center text-white border-b border-white/10 hover:text-[#ec7337]">Contato</a>
+                  <Link to="/contato" className="block w-full py-3 text-2xl font-header uppercase font-bold text-center text-white border-b border-white/10 hover:text-[#ec7337]">Contato</Link>
                </li>
                 {/* BOTÃO LIGAR MENU MOBILE ATUALIZADO */}
                <li className="w-full mt-8">
@@ -990,6 +1069,8 @@ export function AppShell() {
         <Routes>
             <Route path="/" element={<HomePage offsetY={offsetY} />} />
             <Route path="/servicos/:id" element={<ServicePage />} />
+            <Route path="/sobre" element={<SobrePage offsetY={offsetY} />} />
+            <Route path="/contato" element={<ContatoPage />} />
             {LANDING_PAGES.map((page) => (
                 <Route key={page.slug} path={page.path} element={<LandingPage page={page} offsetY={offsetY} />} />
             ))}
@@ -1034,9 +1115,9 @@ export function AppShell() {
                 <h2 className="text-white font-bold uppercase mb-6 md:mb-8 font-header tracking-wider border-l-2 border-[#ec7337] pl-3">Navegação</h2>
                 <ul className="space-y-1 text-zinc-400 text-sm">
                 <li><Link to="/" className="hover:text-[#ec7337] transition-colors flex items-center py-3"><span className="w-1 h-1 bg-[#ec7337] rounded-full mr-2"></span>Início</Link></li>
-                <li><a href="/#sobre" className="hover:text-[#ec7337] transition-colors flex items-center py-3"><span className="w-1 h-1 bg-[#ec7337] rounded-full mr-2"></span>Sobre Nós</a></li>
+                <li><Link to="/sobre" className="hover:text-[#ec7337] transition-colors flex items-center py-3"><span className="w-1 h-1 bg-[#ec7337] rounded-full mr-2"></span>Sobre Nós</Link></li>
                 <li><a href="/#servicos" className="hover:text-[#ec7337] transition-colors flex items-center py-3"><span className="w-1 h-1 bg-[#ec7337] rounded-full mr-2"></span>Serviços</a></li>
-                <li><a href="/#contato" className="hover:text-[#ec7337] transition-colors flex items-center py-3"><span className="w-1 h-1 bg-[#ec7337] rounded-full mr-2"></span>Fale Conosco</a></li>
+                <li><Link to="/contato" className="hover:text-[#ec7337] transition-colors flex items-center py-3"><span className="w-1 h-1 bg-[#ec7337] rounded-full mr-2"></span>Fale Conosco</Link></li>
                 </ul>
             </div>
 
@@ -1058,7 +1139,7 @@ export function AppShell() {
                     <div>
                         <h3 className="text-white font-bold text-sm uppercase mb-1">Telefone</h3>
                         <a href={PHONE_LINK} className="block py-2 text-zinc-300 text-lg font-bold hover:text-[#ec7337] transition-colors" data-cta="telefone">{PHONE_DISPLAY}</a>
-                        <p className="text-zinc-400 text-xs mt-1">Seg - Sex: 08h às 18h</p>
+                        <p className="text-zinc-400 text-xs mt-1">{HOURS.display}</p>
                     </div>
                 </div>
 

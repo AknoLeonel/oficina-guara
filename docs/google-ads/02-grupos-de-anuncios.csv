@@ -1,0 +1,26 @@
+﻿Campaign,Ad Group,Ad Group Status
+C01 | Pesquisa | Diesel & Motor,C01.01 | Oficina Diesel,Enabled
+C01 | Pesquisa | Diesel & Motor,C01.02 | Motor Diesel,Enabled
+C01 | Pesquisa | Diesel & Motor,C01.03 | Injeção Eletrônica,Enabled
+C01 | Pesquisa | Diesel & Motor,C01.04 | Limpeza de Filtro DPF,Enabled
+C01 | Pesquisa | Diesel & Motor,C01.05 | Sistema Arla 32,Enabled
+C01 | Pesquisa | Diesel & Motor,C01.06 | Caminhonete Perdendo Força,Enabled
+C02 | Pesquisa | Câmbio & Tração,C02.01 | Câmbio Automático,Enabled
+C02 | Pesquisa | Câmbio & Tração,C02.02 | Câmbio Toro,Enabled
+C02 | Pesquisa | Câmbio & Tração,C02.03 | Tração 4x4,Enabled
+C03 | Pesquisa | Modelos de Caminhonete,C03.01 | RAM,Enabled
+C03 | Pesquisa | Modelos de Caminhonete,C03.02 | Toyota Hilux,Enabled
+C03 | Pesquisa | Modelos de Caminhonete,C03.03 | Toyota SW4,Enabled
+C03 | Pesquisa | Modelos de Caminhonete,C03.04 | Amarok,Enabled
+C03 | Pesquisa | Modelos de Caminhonete,C03.05 | Ford Ranger,Enabled
+C03 | Pesquisa | Modelos de Caminhonete,C03.06 | S10 e Trailblazer,Enabled
+C03 | Pesquisa | Modelos de Caminhonete,C03.07 | Fiat Toro Diesel,Enabled
+C03 | Pesquisa | Modelos de Caminhonete,C03.08 | Jeep Compass Diesel,Enabled
+C03 | Pesquisa | Modelos de Caminhonete,C03.09 | Jeep Renegade,Enabled
+C03 | Pesquisa | Modelos de Caminhonete,C03.10 | L200 Triton,Enabled
+C03 | Pesquisa | Modelos de Caminhonete,C03.11 | Nissan Frontier,Enabled
+C04 | Pesquisa | Caminhonete & 4x4,C04.01 | Caminhonete 4x4,Enabled
+C04 | Pesquisa | Caminhonete & 4x4,C04.02 | Oficina de Caminhonete,Enabled
+C05 | Pesquisa | Institucional & Marca,C05.01 | Oficina do Éder,Enabled
+C05 | Pesquisa | Institucional & Marca,C05.02 | Oficina Mecânica,Enabled
+C05 | Pesquisa | Institucional & Marca,C05.03 | Centro Automotivo,Enabled

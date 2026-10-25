@@ -40,6 +40,20 @@ export const SOCIAL_LINKS = {
   facebook: '',
 };
 
+// Horário de atendimento (site, dados estruturados e programação dos anúncios).
+export const HOURS = {
+  display: 'Seg a Sex: 05h às 20h',
+  days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+  opens: '05:00',
+  closes: '20:00',
+};
+
+// Páginas institucionais (sitelinks "Sobre a Oficina" e "Fale Conosco").
+export const STATIC_PAGES = [
+  { path: '/sobre', title: 'Sobre a Oficina Guará | Oficina do Éder no Guará II', description: 'Conheça a Oficina Guará, a Oficina do Éder: especialistas em caminhonetes diesel e 4x4 no Guará II, Brasília. Estrutura, equipe e serviços.' },
+  { path: '/contato', title: 'Fale Conosco | Oficina Guará no Guará II, Brasília', description: 'Fale com a Oficina Guará pelo WhatsApp ou telefone (61) 98207-9250. Área Especial 2A, Guará II, Brasília/DF. Avaliação gratuita.' },
+];
+
 export const EMAIL = 'oficinadoeder@gmail.com';
 export const MAPS_LINK = 'https://www.google.com/maps/search/?api=1&query=' +
   encodeURIComponent('Oficina do Éder, Área Especial 2A, Conjunto A, Lote 6, Guará II, Brasília - DF, 71070-625');
