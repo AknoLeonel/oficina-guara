@@ -8,6 +8,7 @@ import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { LANDING_PAGES } from '../src/landingPages.js';
 import { SITE_URL, HOME_META, WHATSAPP_NUMBER, EMAIL, HOURS, STATIC_PAGES } from '../src/siteConfig.js';
+import { EDER_BATERIA, BATERIA_FAQ, BATERIA_REGIOES } from '../src/ederBateria.js';
 
 const DIST = 'dist';
 const SERVICE_PATHS = ['mecanica-motor', 'eletrica-tecnologia', 'suspensao-freios', 'conforto-clima'].map((id) => `/servicos/${id}`);
@@ -59,7 +60,7 @@ const replaceOrFail = (html, search, replacement) => {
   return html.replace(search, replacement);
 };
 
-const renderPage = ({ title, description, path, banner, breadcrumb, noindex = false, renderPath = path }) => {
+const renderPage = ({ title, description, path, banner, breadcrumb, noindex = false, renderPath = path, head = [], business = BUSINESS, image, icon }) => {
   const url = SITE_URL + path;
   let html = template;
   html = replaceOrFail(html, /<title>[^<]*<\/title>/, `<title>${escapeHtml(title)}</title>`);
@@ -71,7 +72,7 @@ const renderPage = ({ title, description, path, banner, breadcrumb, noindex = fa
   if (noindex) {
     extra.push('<meta name="robots" content="noindex" />');
   } else {
-    extra.push(`<link rel="canonical" href="${url}" />`, `<meta property="og:url" content="${url}" />`, jsonLd(BUSINESS));
+    extra.push(`<link rel="canonical" href="${url}" />`, `<meta property="og:url" content="${url}" />`, jsonLd(business));
   }
   if (breadcrumb) {
     extra.push(jsonLd({
@@ -90,6 +91,13 @@ const renderPage = ({ title, description, path, banner, breadcrumb, noindex = fa
       `<link rel="preload" as="image" type="image/webp" href="${banner.desktop}" media="(min-width: 768px)" fetchpriority="high" />`,
     );
   }
+  if (image) {
+    html = replaceOrFail(html, /<meta property="og:image" content="[^"]*"\s*\/>/, `<meta property="og:image" content="${SITE_URL}${image}" />`);
+  }
+  if (icon) {
+    html = replaceOrFail(html, /<link rel="icon"[^>]*>/, `<link rel="icon" type="image/png" href="${icon}" />`);
+  }
+  extra.push(...head);
   html = html.replace('</head>', `  ${extra.join('\n    ')}\n  </head>`);
   return replaceOrFail(html, '<div id="root"></div>', `<div id="root">${render(renderPath)}</div>`);
 };
@@ -115,6 +123,65 @@ for (const page of STATIC_PAGES) {
   writeFileSync(join(DIST, page.path, 'index.html'), renderPage(page));
 }
 
+// Eder Bateria (/eder-bateria): favicon, geo, schema AutoPartsStore + AutoRepair, FAQ e breadcrumb próprios
+{
+  const url = SITE_URL + EDER_BATERIA.path;
+  const { lat, lng } = EDER_BATERIA.geo;
+  const business = {
+    ...BUSINESS,
+    '@type': ['AutoPartsStore', 'AutoRepair'],
+    '@id': `${url}#loja`,
+    name: EDER_BATERIA.fullName,
+    alternateName: EDER_BATERIA.name,
+    url,
+    image: SITE_URL + EDER_BATERIA.ogImage,
+    logo: SITE_URL + EDER_BATERIA.logo,
+    geo: { '@type': 'GeoCoordinates', latitude: lat, longitude: lng },
+    areaServed: BATERIA_REGIOES.map((name) => ({ '@type': 'Place', name: `${name}, Brasília - DF` })),
+    brand: [{ '@type': 'Brand', name: 'Heliar' }, { '@type': 'Brand', name: 'Moura' }],
+    parentOrganization: { '@type': 'AutoRepair', name: BUSINESS.name, url: `${SITE_URL}/` },
+  };
+  const head = [
+    '<meta name="robots" content="index, follow, max-image-preview:large" />',
+    '<meta property="og:locale" content="pt_BR" />',
+    '<meta property="og:image:width" content="1200" />',
+    '<meta property="og:image:height" content="630" />',
+    '<meta name="geo.region" content="BR-DF" />',
+    '<meta name="geo.placename" content="Brasília" />',
+    `<meta name="geo.position" content="${lat};${lng}" />`,
+    `<meta name="ICBM" content="${lat}, ${lng}" />`,
+    `<link rel="apple-touch-icon" href="${EDER_BATERIA.appleIcon}" />`,
+    `<link rel="preload" as="image" type="image/webp" href="${EDER_BATERIA.logo}" fetchpriority="high" />`,
+    jsonLd({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: BATERIA_FAQ.map((item) => ({
+        '@type': 'Question',
+        name: item.pergunta,
+        acceptedAnswer: { '@type': 'Answer', text: item.resposta },
+      })),
+    }),
+    jsonLd({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Oficina Guará', item: `${SITE_URL}/` },
+        { '@type': 'ListItem', position: 2, name: EDER_BATERIA.name, item: url },
+      ],
+    }),
+  ];
+  mkdirSync(join(DIST, EDER_BATERIA.path), { recursive: true });
+  writeFileSync(join(DIST, EDER_BATERIA.path, 'index.html'), renderPage({
+    title: EDER_BATERIA.title,
+    description: EDER_BATERIA.description,
+    path: EDER_BATERIA.path,
+    image: EDER_BATERIA.ogImage,
+    icon: EDER_BATERIA.icon,
+    business,
+    head,
+  }));
+}
+
 // Fallback de /servicos/* (vercel.json): sem canonical nem conteúdo, o React monta a página.
 writeFileSync(join(DIST, 'spa.html'), template);
 // Qualquer outra URL: página 404 de verdade (status 404 na Vercel).
@@ -127,7 +194,7 @@ writeFileSync(join(DIST, '404.html'), renderPage({
 writeFileSync(join(DIST, 'index.html'), renderPage({ ...HOME_META, path: '/' }));
 
 const today = new Date().toISOString().slice(0, 10);
-const urls = ['/', ...LANDING_PAGES.map((page) => page.path), ...STATIC_PAGES.map((page) => page.path), ...SERVICE_PATHS];
+const urls = ['/', EDER_BATERIA.path, ...LANDING_PAGES.map((page) => page.path), ...STATIC_PAGES.map((page) => page.path), ...SERVICE_PATHS];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.map((path) => `  <url><loc>${SITE_URL}${path}</loc><lastmod>${today}</lastmod></url>`).join('\n')}

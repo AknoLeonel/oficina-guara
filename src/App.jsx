@@ -7,6 +7,8 @@ import {
   Gauge, Volume2, Cpu, PaintBucket
 } from 'lucide-react';
 import { LANDING_PAGES, LANDING_GROUP_TITLES, findLandingPage } from './landingPages';
+import EderBateriaPage from './EderBateria';
+import { EDER_BATERIA } from './ederBateria';
 import { SITE_URL, HOME_META, whatsappLink, PHONE_DISPLAY, PHONE_LINK, SOCIAL_LINKS, EMAIL, MAPS_LINK, HOURS, STATIC_PAGES } from './siteConfig';
 
 // --- DADOS GLOBAIS ---
@@ -123,7 +125,7 @@ const upsertHeadTag = (tag, attrs, valueAttr, value) => {
   el.setAttribute(valueAttr, value);
 };
 
-const usePageMeta = ({ title, description, path, image, noindex = false }) => {
+const usePageMeta = ({ title, description, path, image, noindex = false, robots = 'index, follow' }) => {
   useEffect(() => {
     const url = SITE_URL + path;
     document.title = title;
@@ -133,8 +135,8 @@ const usePageMeta = ({ title, description, path, image, noindex = false }) => {
     upsertHeadTag('meta', { property: 'og:description' }, 'content', description);
     upsertHeadTag('meta', { property: 'og:url' }, 'content', url);
     if (image) upsertHeadTag('meta', { property: 'og:image' }, 'content', SITE_URL + image);
-    upsertHeadTag('meta', { name: 'robots' }, 'content', noindex ? 'noindex' : 'index, follow');
-  }, [title, description, path, image, noindex]);
+    upsertHeadTag('meta', { name: 'robots' }, 'content', noindex ? 'noindex' : robots);
+  }, [title, description, path, image, noindex, robots]);
 };
 
 // Link do WhatsApp com a mensagem da landing page atual (topo, meio e botão flutuante)
@@ -1005,9 +1007,21 @@ const FooterSiteMap = () => {
 
 // --- APP PRINCIPAL ---
 // AppShell recebe o roteador de fora: BrowserRouter no navegador, StaticRouter no build (entry-server.jsx).
+// Eder Bateria: página própria, fora do layout da oficina (sem menu, rodapé e botão flutuante).
+const EderBateriaRoute = () => {
+  usePageMeta({ title: EDER_BATERIA.title, description: EDER_BATERIA.description, path: EDER_BATERIA.path, image: EDER_BATERIA.ogImage, robots: 'index, follow, max-image-preview:large' });
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  return <EderBateriaPage />;
+};
+
 export function AppShell() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [offsetY, setOffsetY] = useState(0);
+  const { pathname } = useLocation();
 
   useEffect(() => {
     let ticking = false;
@@ -1024,6 +1038,8 @@ export function AppShell() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  if (pathname.replace(/\/$/, '') === EDER_BATERIA.path) return <EderBateriaRoute />;
 
   return (
         <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-[#ec7337] selection:text-zinc-950 overflow-x-hidden relative">
@@ -1118,6 +1134,7 @@ export function AppShell() {
                 <li><Link to="/sobre" className="hover:text-[#ec7337] transition-colors flex items-center py-3"><span className="w-1 h-1 bg-[#ec7337] rounded-full mr-2"></span>Sobre Nós</Link></li>
                 <li><a href="/#servicos" className="hover:text-[#ec7337] transition-colors flex items-center py-3"><span className="w-1 h-1 bg-[#ec7337] rounded-full mr-2"></span>Serviços</a></li>
                 <li><Link to="/contato" className="hover:text-[#ec7337] transition-colors flex items-center py-3"><span className="w-1 h-1 bg-[#ec7337] rounded-full mr-2"></span>Fale Conosco</Link></li>
+                <li><Link to={EDER_BATERIA.path} className="hover:text-[#ec7337] transition-colors flex items-center py-3"><span className="w-1 h-1 bg-[#ec7337] rounded-full mr-2"></span>Bateria Heliar e Moura no DF</Link></li>
                 </ul>
             </div>
 
