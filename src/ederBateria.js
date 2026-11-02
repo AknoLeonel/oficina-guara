@@ -38,9 +38,18 @@ export const BATERIA_SELOS = [
   'Pagamento na hora',
 ];
 
+// Logos enviadas pela oficina; o painel do card usa a cor de fundo de cada marca.
 export const BATERIA_MARCAS = [
-  { nome: 'Heliar', texto: 'Linha completa Heliar: convencional, EFB e AGM para carros com start-stop.' },
-  { nome: 'Moura', texto: 'Linha completa Moura: convencional, EFB e AGM para carros com start-stop.' },
+  {
+    nome: 'Heliar',
+    texto: 'Baterias Heliar originais para carros, SUVs, caminhonetes e motos, inclusive com start-stop.',
+    logo: '/eder-bateria/logo-heliar.webp', logoW: 800, logoH: 272, painel: 'bg-[#016435]',
+  },
+  {
+    nome: 'Moura',
+    texto: 'Baterias Moura originais para carros, SUVs, caminhonetes e motos, inclusive com start-stop.',
+    logo: '/eder-bateria/logo-moura.webp', logoW: 576, logoH: 146, painel: 'bg-white',
+  },
 ];
 
 export const BATERIA_TIPOS = [
