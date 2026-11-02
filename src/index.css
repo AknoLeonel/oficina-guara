@@ -8,3 +8,6 @@ html, body, #root {
   margin: 0;
   padding: 0;
 }
+/* Tipografia do site (também usada pela Eder Bateria, fora do layout da oficina) */
+body { font-family: 'Inter', sans-serif; }
+.font-header { font-family: 'Oswald', sans-serif; }

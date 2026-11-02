@@ -81,9 +81,11 @@ export default function EderBateriaPage() {
                 ))}
               </ul>
             </div>
-            <div className="hidden lg:flex justify-center">
-              <img src="/eder-bateria/icone-motoboy.webp" alt="" aria-hidden="true" width="934" height="560" className="w-full max-w-lg h-auto" />
-            </div>
+            {/* Ilustração só no desktop: no celular o <picture> entrega um pixel vazio, sem baixar os 74 KB */}
+            <picture className="hidden lg:flex justify-center" aria-hidden="true">
+              <source media="(min-width: 1024px)" srcSet="/eder-bateria/icone-motoboy.webp" type="image/webp" />
+              <img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="" width="934" height="560" className="w-full max-w-lg h-auto" />
+            </picture>
           </div>
         </section>
 
@@ -204,7 +206,7 @@ export default function EderBateriaPage() {
             <div className="divide-y divide-white/10 border-y border-white/10">
               {BATERIA_FAQ.map((item) => (
                 <details key={item.pergunta} className="group">
-                  <summary className="flex items-center justify-between gap-4 min-h-14 py-4 cursor-pointer list-none font-bold text-white">
+                  <summary className="flex items-center justify-between gap-4 min-h-14 py-4 cursor-pointer list-none [&::-webkit-details-marker]:hidden font-bold text-white">
                     {item.pergunta}
                     <ChevronDown size={20} className="text-[#F26A1B] shrink-0 transition-transform group-open:rotate-180" aria-hidden="true" />
                   </summary>
