@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom';
 import {
   MessageCircle, Phone, Car, CarFront, Truck, Motorbike, Zap, ShieldCheck, Receipt, Wrench,
-  MapPin, Clock, Recycle, ChevronDown, CheckCircle, BatteryCharging,
+  MapPin, Clock, Recycle, ChevronDown, CheckCircle,
 } from 'lucide-react';
 import {
   EDER_BATERIA, ederWhatsappLink, BATERIA_SELOS, BATERIA_MARCAS, BATERIA_TIPOS, BATERIA_PASSOS,
@@ -57,8 +57,9 @@ export default function EderBateriaPage() {
 
       <main>
         {/* 1. HERO */}
-        <section className="relative">
-          <div className="container mx-auto px-4 md:px-8 py-10 md:py-20 grid lg:grid-cols-[1.2fr_1fr] gap-10 items-center">
+        <section className="relative overflow-hidden">
+          <div className="pointer-events-none absolute -top-40 right-[-20%] w-[640px] h-[640px] rounded-full bg-[#F26A1B]/15 blur-[120px]" aria-hidden="true"></div>
+          <div className="relative container mx-auto px-4 md:px-8 py-10 md:py-20 grid lg:grid-cols-[1.2fr_1fr] gap-10 items-center">
             <div>
               <p className="inline-flex items-center gap-2 px-3 py-1 mb-5 rounded-full border border-[#F26A1B]/50 text-[#F26A1B] text-xs font-bold uppercase tracking-widest">
                 <Zap size={14} aria-hidden="true" /> Resgate de bateria por motoboy
@@ -73,7 +74,17 @@ export default function EderBateriaPage() {
                 <CtaWhatsapp posicao="hero">Chamar no WhatsApp</CtaWhatsapp>
                 <CtaLigar posicao="hero">Ligar agora</CtaLigar>
               </div>
-              <ul className="mt-8 grid grid-cols-2 gap-3 max-w-xl">
+              <div className="mt-8">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400 mb-3">Baterias originais</p>
+                <ul className="flex gap-3">
+                  {BATERIA_MARCAS.map((marca) => (
+                    <li key={marca.nome} className={`h-14 md:h-16 w-36 md:w-44 rounded-xl ${marca.painel} flex items-center justify-center px-3 overflow-hidden`}>
+                      <img src={marca.logo} alt={`Baterias ${marca.nome}`} width={marca.logoW} height={marca.logoH} className="max-h-10 md:max-h-12 w-auto" />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <ul className="mt-6 grid grid-cols-2 gap-3 max-w-xl">
                 {BATERIA_SELOS.map((selo) => (
                   <li key={selo} className="flex items-start gap-2 text-sm text-zinc-200">
                     <CheckCircle size={18} className="text-[#F26A1B] shrink-0 mt-0.5" aria-hidden="true" /> {selo}
@@ -95,17 +106,27 @@ export default function EderBateriaPage() {
             <SectionTitle eyebrow="Duas marcas, um clique para cotar">Baterias Heliar e Moura</SectionTitle>
             <div className="grid sm:grid-cols-2 gap-4 md:gap-6">
               {BATERIA_MARCAS.map((marca) => (
-                <article key={marca.nome} className="p-6 md:p-8 rounded-2xl bg-[#111] border border-white/10 flex flex-col gap-5">
-                  <div className="flex items-center gap-3">
-                    <BatteryCharging size={32} className="text-[#F26A1B]" aria-hidden="true" />
-                    <h3 className="font-header font-bold uppercase text-4xl md:text-5xl text-white">{marca.nome}</h3>
+                <article key={marca.nome} className="rounded-2xl overflow-hidden bg-[#161616] border border-white/10 flex flex-col transition-transform duration-300 hover:-translate-y-1">
+                  <div className={`${marca.painel} h-32 md:h-40 flex items-center justify-center px-8`}>
+                    <img src={marca.logo} alt={`Logo Baterias ${marca.nome}`} width={marca.logoW} height={marca.logoH} loading="lazy" className="max-h-20 md:max-h-24 w-auto" />
                   </div>
-                  <p className="text-zinc-300">{marca.texto}</p>
-                  <CtaWhatsapp posicao={`card-${marca.nome.toLowerCase()}`} marca={marca.nome} className="mt-auto">Cotar bateria {marca.nome}</CtaWhatsapp>
+                  <div className="p-6 md:p-8 flex flex-col gap-5 flex-1">
+                    <h3 className="font-header font-bold uppercase text-2xl md:text-3xl text-white">Baterias {marca.nome}</h3>
+                    <p className="text-zinc-300">{marca.texto}</p>
+                    <ul className="flex flex-wrap gap-2" aria-label={`Linhas ${marca.nome}`}>
+                      {BATERIA_TIPOS.map((tipo) => (
+                        <li key={tipo.nome} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/15 text-sm text-zinc-200">
+                          <CheckCircle size={14} className="text-[#F26A1B]" aria-hidden="true" /> {tipo.nome}
+                        </li>
+                      ))}
+                    </ul>
+                    <CtaWhatsapp posicao={`card-${marca.nome.toLowerCase()}`} marca={marca.nome} className="mt-auto">Cotar bateria {marca.nome}</CtaWhatsapp>
+                  </div>
                 </article>
               ))}
             </div>
-            <dl className="mt-8 grid sm:grid-cols-3 gap-4">
+            <p className="mt-10 mb-4 text-sm font-bold uppercase tracking-[0.2em] text-zinc-400">Qual linha é a do seu carro?</p>
+            <dl className="grid sm:grid-cols-3 gap-4">
               {BATERIA_TIPOS.map((tipo) => (
                 <div key={tipo.nome} className="p-4 rounded-xl border border-white/10">
                   <dt className="font-header font-bold uppercase text-[#F26A1B] text-lg">{tipo.nome}</dt>
