@@ -25,10 +25,16 @@ python3 scripts/google-ads/gerar_planilha.py
 | `06-anuncios-rsa.csv` | 1 RSA por conjunto: 3 títulos exclusivos fixados na posição 1 + 12 do banco, 4 descrições |
 | `07-sitelinks.csv` | Sitelinks por campanha + 2 da conta (linha sem campanha) |
 | `08-frases-de-destaque.csv` | Frases de destaque da conta |
-| `09-snippets-estruturados.csv` | Snippets: Serviços, Modelos, Marcas |
-| `10-programacao.csv` | Seg a Sex, 05:00–19:00 (1h antes do fechamento às 20h) |
 
 Orçamento diário (meio da faixa do briefing): C01 R$ 49 · C02 R$ 28 · C03 R$ 41 · C04 R$ 14 · C05 R$ 7 = **R$ 139/dia**.
+
+## No Editor, à mão (o Editor não aceita estes dois por CSV)
+
+- **Programação de anúncios:** selecione as 5 campanhas › Programação de anúncios › Seg a Sex, **5:00 AM às 7:00 PM** (1h antes do fechamento às 20h).
+- **Snippets estruturados** (Biblioteca compartilhada › Snippets estruturados, um valor por campo):
+  - **Serviços:** Oficina Diesel, Injeção Eletrônica, Filtro DPF, Sistema Arla 32, Câmbio Automático, Tração 4x4, Motor Diesel
+  - **Modelos:** Hilux, SW4, Ranger, S10, Trailblazer, Amarok, RAM, Toro, L200 Triton, Frontier
+  - **Marcas:** Toyota, Ford, Chevrolet, Volkswagen, Fiat, Jeep, Mitsubishi, Nissan, RAM
 
 ## Depois de importar (no Google Ads, uma vez)
 

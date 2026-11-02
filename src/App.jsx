@@ -9,47 +9,9 @@ import {
 import { LANDING_PAGES, LANDING_GROUP_TITLES, findLandingPage } from './landingPages';
 import EderBateriaPage from './EderBateria';
 import { EDER_BATERIA } from './ederBateria';
-import { SITE_URL, HOME_META, whatsappLink, PHONE_DISPLAY, PHONE_LINK, SOCIAL_LINKS, EMAIL, MAPS_LINK, HOURS, STATIC_PAGES } from './siteConfig';
+import { SITE_URL, DEFAULT_OG_IMAGE, HOME_META, whatsappLink, PHONE_DISPLAY, PHONE_LINK, SOCIAL_LINKS, EMAIL, MAPS_LINK, HOURS, STATIC_PAGES } from './siteConfig';
 
-// --- DADOS GLOBAIS ---
-const DATA_CATEGORIES = [
-  {
-    id: 'mecanica-motor',
-    title: "Mecânica & Motor",
-    icon: Wrench,
-    description: "O coração do seu carro em perfeitas condições.",
-    fullDescription: "Nossa equipe especializada cuida de todo o conjunto mecânico do seu veículo, garantindo potência e longevidade. Utilizamos peças originais e equipamentos de precisão para diagnósticos exatos. Do cabeçote ao cárter, seu motor é tratado com a máxima seriedade.",
-    services: ["Diagnóstico Completo", "Correia Dentada", "Manutenção de Motores", "Troca de Óleo e Filtros", "Cabeçote", "Sistema de Arrefecimento"],
-    image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=1600&auto=format&fit=crop"
-  },
-  {
-    id: 'eletrica-tecnologia',
-    title: "Elétrica & Tecnologia",
-    icon: Cpu,
-    description: "Soluções avançadas para sistemas modernos.",
-    fullDescription: "Veículos modernos dependem de sistemas elétricos complexos. Nossa oficina conta com scanners de última geração para identificar falhas em sensores, módulos e chicotes elétricos. Resolvemos desde panes simples até reprogramação de módulos.",
-    services: ["Injeção Eletrônica", "Baterias e Alternadores", "Sensores e Atuadores", "Diagnóstico via Scanner", "Reparo de Centrais", "Iluminação"],
-    image: "https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?q=80&w=1600&auto=format&fit=crop"
-  },
-  {
-    id: 'suspensao-freios',
-    title: "Suspensão & Freios",
-    icon: Disc,
-    description: "Segurança e estabilidade para sua família.",
-    fullDescription: "A estabilidade do seu carro é crucial para sua segurança. Revisamos todo o sistema de suspensão e freios para garantir que você tenha controle total, seja no asfalto ou na terra. Trabalhamos com amortecedores, molas e pastilhas de alta performance.",
-    services: ["Sistema de Freios ABS", "Amortecedores e Molas", "Alinhamento e Balanceamento", "Pneus e Rodas", "Troca de Pastilhas", "Buchas e Pivôs"],
-    image: "https://images.unsplash.com/photo-1487754180451-c456f719a1fc?q=80&w=1600&auto=format&fit=crop"
-  },
-  {
-    id: 'conforto-clima',
-    title: "Conforto & Clima",
-    icon: Wind,
-    description: "Bem-estar total dentro do seu veículo.",
-    fullDescription: "Não passe calor! Mantemos o sistema de climatização do seu veículo limpo e eficiente, garantindo a saúde respiratória da sua família e o conforto térmico. Realizamos higienização com ozônio e manutenção completa do sistema.",
-    services: ["Higienização de Ar-Condicionado", "Filtro de Cabine", "Reparo de Compressores", "Carga de Gás", "Detecção de Vazamentos", "Limpeza de Dutos"],
-    image: "https://images.unsplash.com/photo-1589139250009-44445853b006?q=80&w=1600&auto=format&fit=crop"
-  }
-];
+import { DATA_CATEGORIES, serviceMeta } from './servicos';
 
 // --- COMPONENTES OTIMIZADOS ---
 const MechanicAbstract = memo(() => {
@@ -125,7 +87,7 @@ const upsertHeadTag = (tag, attrs, valueAttr, value) => {
   el.setAttribute(valueAttr, value);
 };
 
-const usePageMeta = ({ title, description, path, image, noindex = false, robots = 'index, follow' }) => {
+const usePageMeta = ({ title, description, path, image = DEFAULT_OG_IMAGE, noindex = false, robots = 'index, follow' }) => {
   useEffect(() => {
     const url = SITE_URL + path;
     document.title = title;
@@ -134,7 +96,7 @@ const usePageMeta = ({ title, description, path, image, noindex = false, robots 
     upsertHeadTag('meta', { property: 'og:title' }, 'content', title);
     upsertHeadTag('meta', { property: 'og:description' }, 'content', description);
     upsertHeadTag('meta', { property: 'og:url' }, 'content', url);
-    if (image) upsertHeadTag('meta', { property: 'og:image' }, 'content', SITE_URL + image);
+    upsertHeadTag('meta', { property: 'og:image' }, 'content', SITE_URL + image);
     upsertHeadTag('meta', { name: 'robots' }, 'content', noindex ? 'noindex' : robots);
   }, [title, description, path, image, noindex, robots]);
 };
@@ -351,12 +313,7 @@ const ServicePage = () => {
     const category = DATA_CATEGORIES.find(cat => cat.id === id);
     const waLink = useWhatsappLink();
 
-    usePageMeta({
-        title: category ? `${category.title} no Guará II | Oficina Guará` : HOME_META.title,
-        description: category ? category.fullDescription : HOME_META.description,
-        path: `/servicos/${id}`,
-        noindex: !category,
-    });
+    usePageMeta(category ? serviceMeta(category) : { ...HOME_META, path: `/servicos/${id}`, noindex: true });
 
     useEffect(() => {
         window.scrollTo(0, 0);

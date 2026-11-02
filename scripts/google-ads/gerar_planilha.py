@@ -374,8 +374,6 @@ escrever('06-anuncios-rsa.csv', cab, linhas)
 escrever('07-sitelinks.csv', ['Campaign', 'Sitelink text', 'Description line 1', 'Description line 2', 'Final URL'],
          [[camp, s['texto'], s['d1'], s['d2'], SITE + s['url']] for camp, lista in SITELINKS.items() for s in lista])
 escrever('08-frases-de-destaque.csv', ['Campaign', 'Callout text'], [['', co] for co in CALLOUTS])
-escrever('09-snippets-estruturados.csv', ['Campaign', 'Header', 'Values'],
-         [['', h, '; '.join(v)] for h, v in SNIPPETS])
-escrever('10-programacao.csv', ['Campaign', 'Ad Schedule'],
-         [[n, f'{d}, {HORARIO_ANUNCIOS[0]} - {HORARIO_ANUNCIOS[1]}'] for n, _ in CAMPANHAS for d in DIAS])
+# Snippets estruturados e programação de anúncios não vão em CSV: o Google Ads Editor rejeitou
+# os formatos na importação. Ficam no LEIA-ME para configurar no Editor (SNIPPETS e HORARIO_ANUNCIOS).
 print('OK: 25 conjuntos, 5 campanhas, todos os limites e URLs conferidos')
