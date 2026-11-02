@@ -1044,8 +1044,6 @@ export function AppShell() {
   return (
         <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-[#ec7337] selection:text-zinc-950 overflow-x-hidden relative">
         <style>{`
-            .font-header { font-family: 'Oswald', sans-serif; }
-            body { font-family: 'Inter', sans-serif; }
             .bg-noise {
                 position: fixed;
                 top: 0;
