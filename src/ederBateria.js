@@ -8,7 +8,7 @@ export const EDER_BATERIA = {
   path: '/eder-bateria',
   name: 'Eder Bateria',
   fullName: 'Eder Bateria por Oficina do Eder',
-  title: 'Bateria Heliar e Moura no DF com Instalação no Local | Eder Bateria',
+  title: 'Bateria Heliar e Moura com Instalação no DF | Eder Bateria',
   description: 'Carro não pegou? Motoboy leva bateria Heliar ou Moura nova até você, instala grátis e testa o alternador. Guará e todo o DF. Chame no WhatsApp.',
   h1: 'Bateria Heliar e Moura com resgate na hora no DF',
   ogImage: '/eder-bateria/og-eder-bateria.jpg',

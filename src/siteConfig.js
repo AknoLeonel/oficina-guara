@@ -28,10 +28,13 @@ export const WHATSAPP_DEFAULT_MESSAGE = 'Gostaria de informações oficina guara
 export const whatsappLink = (message = WHATSAPP_DEFAULT_MESSAGE) =>
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
+// Imagem de compartilhamento (og:image) das páginas sem imagem própria.
+export const DEFAULT_OG_IMAGE = '/og-oficina-guara.jpg';
+
 // SEO da home (mesmo texto do index.html).
 export const HOME_META = {
   title: 'Oficina Guará - Especialista em 4x4 e Pick-ups | Guará DF',
-  description: 'Centro automotivo no Guará II especializado em revisão de caminhonetes, 4x4, Toyota, Ford e GM. Diagnóstico completo, injeção eletrônica e mecânica de confiança.',
+  description: 'Centro automotivo no Guará II especializado em caminhonetes e 4x4: revisão, diesel, injeção eletrônica e diagnóstico completo. Mecânica de confiança.',
 };
 
 // Redes sociais: só aparecem no rodapé quando preenchidas (ex.: 'https://instagram.com/oficinaguara').

@@ -2,7 +2,8 @@
 // - cria dist/<slug>/index.html para cada landing page com o conteúdo (H1, banner, textos) já no HTML,
 //   mais title, description, canonical, Open Graph, dados estruturados e preload do banner;
 // - pré-renderiza a home e o dist/404.html (servido pela Vercel com status 404);
-// - gera dist/sitemap.xml, dist/robots.txt e dist/spa.html (fallback de /servicos/*).
+// - gera as páginas de serviço (/servicos/<id>), dist/sitemap.xml, dist/robots.txt e dist/spa.html
+//   (fallback de /servicos/<id> inexistente).
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -11,7 +12,6 @@ import { SITE_URL, HOME_META, WHATSAPP_NUMBER, EMAIL, HOURS, STATIC_PAGES } from
 import { EDER_BATERIA, BATERIA_FAQ, BATERIA_REGIOES } from '../src/ederBateria.js';
 
 const DIST = 'dist';
-const SERVICE_PATHS = ['mecanica-motor', 'eletrica-tecnologia', 'suspensao-freios', 'conforto-clima'].map((id) => `/servicos/${id}`);
 
 // Endereços antigos das landing pages precisam de redirecionamento 301 no vercel.json.
 const vercel = JSON.parse(readFileSync('vercel.json', 'utf-8'));
@@ -19,7 +19,7 @@ const semRedirect = LANDING_PAGES.filter((page) => page.oldSlug &&
   !vercel.redirects?.some((r) => r.source === `/${page.oldSlug}` && r.destination === page.path && r.permanent));
 if (semRedirect.length) throw new Error(`prerender: sem redirect 301 no vercel.json: ${semRedirect.map((page) => page.oldSlug).join(', ')}`);
 
-const { render } = await import(pathToFileURL(resolve('dist-ssr/entry-server.js')).href);
+const { render, SERVICE_PAGES } = await import(pathToFileURL(resolve('dist-ssr/entry-server.js')).href);
 
 const escapeHtml = (text) =>
   text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -117,6 +117,12 @@ for (const page of LANDING_PAGES) {
   );
 }
 
+// Páginas de serviço (/servicos/<id>)
+for (const page of SERVICE_PAGES) {
+  mkdirSync(join(DIST, page.path), { recursive: true });
+  writeFileSync(join(DIST, page.path, 'index.html'), renderPage(page));
+}
+
 // Páginas institucionais (/sobre e /contato)
 for (const page of STATIC_PAGES) {
   mkdirSync(join(DIST, page.path), { recursive: true });
@@ -194,7 +200,7 @@ writeFileSync(join(DIST, '404.html'), renderPage({
 writeFileSync(join(DIST, 'index.html'), renderPage({ ...HOME_META, path: '/' }));
 
 const today = new Date().toISOString().slice(0, 10);
-const urls = ['/', EDER_BATERIA.path, ...LANDING_PAGES.map((page) => page.path), ...STATIC_PAGES.map((page) => page.path), ...SERVICE_PATHS];
+const urls = ['/', EDER_BATERIA.path, ...LANDING_PAGES.map((page) => page.path), ...STATIC_PAGES.map((page) => page.path), ...SERVICE_PAGES.map((page) => page.path)];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.map((path) => `  <url><loc>${SITE_URL}${path}</loc><lastmod>${today}</lastmod></url>`).join('\n')}
